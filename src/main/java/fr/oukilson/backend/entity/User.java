@@ -17,20 +17,21 @@ public class User {
     @Column(name = "user_id")
     private Long id;
     private String password;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
     private String email;
     private String nickname;
     private Blob icon;
-//    private Set<Token> token;
-//    @OneToMany
-    private HashMap<Long, User> friendList;
-    private HashMap<Long, User> deniedList;
-//    @OneToMany//(mappedBy = "")
-    private HashMap<UUID, Game> userGameList;
-//    @OneToMany//(mappedBy = "")
-
-    private HashMap<UUID, Game> userLikeList;
+//    @ManyToMany
+//    private HashMap<Long, User> friendList;
+//    @ManyToMany
+//    private HashMap<Long, User> deniedList;
+//    @ManyToMany
+//    private HashMap<UUID, Game> userGameList;
+//    @ManyToMany
+//    private HashMap<UUID, Game> userLikeList;
 
 
     public User() {
@@ -51,132 +52,132 @@ public class User {
         this.email = email;
         this.nickname = nickname;
         this.icon = icon;
-        this.friendList = new HashMap<Long, User>();
-        this.deniedList = new HashMap<Long, User>();
-        this.userGameList = new HashMap<UUID, Game>();
-        this.userLikeList = new HashMap<UUID, Game>();
+//        this.friendList = new HashMap<Long, User>();
+//        this.deniedList = new HashMap<Long, User>();
+//        this.userGameList = new HashMap<UUID, Game>();
+//        this.userLikeList = new HashMap<UUID, Game>();
     }
 
-    //methods
-    /**
-     * method to add a user-friend to main user's friend list
-     * @param user a user object to be added to the list
-     * @throws IllegalArgumentException if the user is already on the friend or denied list
-     */
-    public void addUserToFriendList(User user) throws IllegalArgumentException{
-        if(!Tools.userOnList(user, this.getFriendList()) && !Tools.userOnList(user, this.getDeniedList())) {
-            this.getFriendList().put(user.getId(), user);
-        }
-        else {
-            throw new IllegalArgumentException("user already on a list");
-        }
-        this.setFriendList(this.getFriendList());
-    }
-
-    /**
-     * method to add an unwanted user to main user's denied list
-     * @param user a user object to be added to the list
-     * @throws IllegalArgumentException if the user is already on the friend or denied list
-     */
-    public void addUserToDeniedList(User user) throws IllegalArgumentException{
-        if(!Tools.userOnList(user, this.getDeniedList()) && !Tools.userOnList(user, this.getFriendList())) {
-            this.getDeniedList().put(user.getId(), user);
-        }
-        else {
-            throw new IllegalArgumentException("user already on list");
-        }
-        this.setDeniedList(this.getDeniedList());
-    }
-
-    /**
-     * method to add a game to a user's owned game list
-     * @param game to add to the list
-     * @throws IllegalArgumentException if the game's already on the list
-     */
-    public void addGameToOwnedGameList(Game game) throws IllegalArgumentException{
-        if(!Tools.gameOnList(game, this.getUserGameList())) {
-            this.getUserGameList().put(game.getUUID(), game);
-        }
-        else {
-            throw new IllegalArgumentException("you own that game already");
-        }
-        this.setUserGameList(this.getUserGameList());
-    }
-
-    /**
-     * method to add a game to a user's liked game list
-     * @param game to add to the list
-     * @throws IllegalArgumentException if the game's already on the list
-     */
-    public void addGameToLikedGameList(Game game) throws IllegalArgumentException{
-        if(!Tools.gameOnList(game, this.getUserLikeList())) {
-            this.getUserLikeList().put(game.getUUID(), game);
-        }
-        else {
-            throw new IllegalArgumentException("you like that game already");
-        }
-        this.setUserLikeList(this.getUserLikeList());
-    }
-
-    /**
-     * method to remove a user from the friend list
-     * @param user a user object to be removed from the list
-     * @throws IllegalArgumentException if the user isn't on the list the main user wants to remove them from
-     */
-    public void removeUserFromFriendList(User user) throws IllegalArgumentException{
-        if(Tools.userOnList(user, this.getFriendList())) {
-            this.getFriendList().remove(user.getId());
-        }
-        else {
-            throw new IllegalArgumentException("user is not on list.");
-        }
-        this.setFriendList(this.getFriendList());
-    }
-
-    /**
-     * method to remove a user from the denied list
-     * @param user a user object to be removed from the list
-     * @throws IllegalArgumentException if the user isn't on the list the main user wants to remove them from
-     */
-    public void removeUserFromDeniedList(User user) throws IllegalArgumentException{
-        if(Tools.userOnList(user, this.getDeniedList())) {
-            this.getDeniedList().remove(user.getId());
-        }
-        else {
-            throw new IllegalArgumentException("user is not on list.");
-        }
-        this.setDeniedList(this.getDeniedList());
-    }
-
-    /**
-     * Method to remove a game from a user's owned game list
-     * @param game game to remove from the list
-     * @throws IllegalArgumentException if game isn't on the list
-     */
-    public void removeGameFromOwnedGameList(Game game) throws IllegalArgumentException{
-        if(Tools.gameOnList(game, this.getUserGameList())) {
-            this.getUserGameList().remove(game.getUUID());
-        }
-        else {
-            throw new IllegalArgumentException("game is not on list.");
-        }
-        this.setUserGameList(this.getUserGameList());
-    }
-
-    /**
-     * Method to remove a game from a user's liked game list
-     * @param game game to remove from the list
-     * @throws IllegalArgumentException if game isn't on the list
-     */
-    public void removeGameFromLikedGameList(Game game) throws IllegalArgumentException{
-        if(Tools.gameOnList(game, this.getUserLikeList())) {
-            this.getUserLikeList().remove(game.getUUID());
-        }
-        else {
-            throw new IllegalArgumentException("game is not on list.");
-        }
-        this.setUserLikeList(this.getUserLikeList());
-    }
+//    //methods
+//    /**
+//     * method to add a user-friend to main user's friend list
+//     * @param user a user object to be added to the list
+//     * @throws IllegalArgumentException if the user is already on the friend or denied list
+//     */
+//    public void addUserToFriendList(User user) throws IllegalArgumentException{
+//        if(!Tools.userOnList(user, this.getFriendList()) && !Tools.userOnList(user, this.getDeniedList())) {
+//            this.getFriendList().put(user.getId(), user);
+//        }
+//        else {
+//            throw new IllegalArgumentException("user already on a list");
+//        }
+//        this.setFriendList(this.getFriendList());
+//    }
+//
+//    /**
+//     * method to add an unwanted user to main user's denied list
+//     * @param user a user object to be added to the list
+//     * @throws IllegalArgumentException if the user is already on the friend or denied list
+//     */
+//    public void addUserToDeniedList(User user) throws IllegalArgumentException{
+//        if(!Tools.userOnList(user, this.getDeniedList()) && !Tools.userOnList(user, this.getFriendList())) {
+//            this.getDeniedList().put(user.getId(), user);
+//        }
+//        else {
+//            throw new IllegalArgumentException("user already on list");
+//        }
+//        this.setDeniedList(this.getDeniedList());
+//    }
+//
+//    /**
+//     * method to add a game to a user's owned game list
+//     * @param game to add to the list
+//     * @throws IllegalArgumentException if the game's already on the list
+//     */
+//    public void addGameToOwnedGameList(Game game) throws IllegalArgumentException{
+//        if(!Tools.gameOnList(game, this.getUserGameList())) {
+//            this.getUserGameList().put(game.getUUID(), game);
+//        }
+//        else {
+//            throw new IllegalArgumentException("you own that game already");
+//        }
+//        this.setUserGameList(this.getUserGameList());
+//    }
+//
+//    /**
+//     * method to add a game to a user's liked game list
+//     * @param game to add to the list
+//     * @throws IllegalArgumentException if the game's already on the list
+//     */
+//    public void addGameToLikedGameList(Game game) throws IllegalArgumentException{
+//        if(!Tools.gameOnList(game, this.getUserLikeList())) {
+//            this.getUserLikeList().put(game.getUUID(), game);
+//        }
+//        else {
+//            throw new IllegalArgumentException("you like that game already");
+//        }
+//        this.setUserLikeList(this.getUserLikeList());
+//    }
+//
+//    /**
+//     * method to remove a user from the friend list
+//     * @param user a user object to be removed from the list
+//     * @throws IllegalArgumentException if the user isn't on the list the main user wants to remove them from
+//     */
+//    public void removeUserFromFriendList(User user) throws IllegalArgumentException{
+//        if(Tools.userOnList(user, this.getFriendList())) {
+//            this.getFriendList().remove(user.getId());
+//        }
+//        else {
+//            throw new IllegalArgumentException("user is not on list.");
+//        }
+//        this.setFriendList(this.getFriendList());
+//    }
+//
+//    /**
+//     * method to remove a user from the denied list
+//     * @param user a user object to be removed from the list
+//     * @throws IllegalArgumentException if the user isn't on the list the main user wants to remove them from
+//     */
+//    public void removeUserFromDeniedList(User user) throws IllegalArgumentException{
+//        if(Tools.userOnList(user, this.getDeniedList())) {
+//            this.getDeniedList().remove(user.getId());
+//        }
+//        else {
+//            throw new IllegalArgumentException("user is not on list.");
+//        }
+//        this.setDeniedList(this.getDeniedList());
+//    }
+//
+//    /**
+//     * Method to remove a game from a user's owned game list
+//     * @param game game to remove from the list
+//     * @throws IllegalArgumentException if game isn't on the list
+//     */
+//    public void removeGameFromOwnedGameList(Game game) throws IllegalArgumentException{
+//        if(Tools.gameOnList(game, this.getUserGameList())) {
+//            this.getUserGameList().remove(game.getUUID());
+//        }
+//        else {
+//            throw new IllegalArgumentException("game is not on list.");
+//        }
+//        this.setUserGameList(this.getUserGameList());
+//    }
+//
+//    /**
+//     * Method to remove a game from a user's liked game list
+//     * @param game game to remove from the list
+//     * @throws IllegalArgumentException if game isn't on the list
+//     */
+//    public void removeGameFromLikedGameList(Game game) throws IllegalArgumentException{
+//        if(Tools.gameOnList(game, this.getUserLikeList())) {
+//            this.getUserLikeList().remove(game.getUUID());
+//        }
+//        else {
+//            throw new IllegalArgumentException("game is not on list.");
+//        }
+//        this.setUserLikeList(this.getUserLikeList());
+//    }
 
 
 
@@ -224,8 +225,7 @@ public class User {
      * @param email user's new email
      */
     public void setEmail(String email) throws IllegalArgumentException{
-        String regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,5}){6,254}$";
+        String regex = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         //"\\b[\\w.!#$%&’*+\\/=?^`{|}~-]+@[\\w-]+(?:\\.[\\w-]+)*\\b{10,45}$";
         if (!Tools.checkRegex(regex, email)) {
             throw new IllegalArgumentException("email must be valid.");
@@ -281,69 +281,69 @@ public class User {
         }
     }
 
-    /**
-     * getter for a user's friend list
-     * @return a user's friend list
-     */
-    public HashMap<Long, User> getFriendList(){
-        return friendList;
-    }
-
-    /**
-     * setter for a user's friend list
-     * @param friendList list of users the user's chosen as friends
-     */
-    public void setFriendList(HashMap<Long, User> friendList) {
-        this.friendList = friendList;
-    }
-
-    /**
-     * get a user's denied list
-     * @return a denied list object
-     */
-    public HashMap<Long, User> getDeniedList() {
-        return deniedList;
-    }
-
-    /**
-     * set a denied list object
-     * @param deniedList new object to replace the existing one
-     */
-    public void setDeniedList(HashMap<Long, User> deniedList) {
-        this.deniedList = deniedList;
-    }
-
-    /**
-     * get a user's owned game list
-     * @return the list of objects
-     */
-    public HashMap<UUID, Game> getUserGameList() {
-        return userGameList;
-    }
-
-    /**
-     * set a list of owned game objects for this user
-     * @param userGameList list of objects to set
-     */
-    public void setUserGameList(HashMap<UUID, Game> userGameList) {
-        this.userGameList = userGameList;
-    }
-
-    /**
-     * get a user's liked game list
-     * @return a list of liked games objects for the user
-     */
-    public HashMap<UUID, Game> getUserLikeList() {
-        return userLikeList;
-    }
-
-    /**
-     * set a list of liked games objects for this user
-     * @param userLikeList the list of objects to set
-     */
-    public void setUserLikeList(HashMap<UUID, Game> userLikeList) {
-        this.userLikeList = userLikeList;
-    }
+//    /**
+//     * getter for a user's friend list
+//     * @return a user's friend list
+//     */
+//    public HashMap<Long, User> getFriendList(){
+//        return friendList;
+//    }
+//
+//    /**
+//     * setter for a user's friend list
+//     * @param friendList list of users the user's chosen as friends
+//     */
+//    public void setFriendList(HashMap<Long, User> friendList) {
+//        this.friendList = friendList;
+//    }
+//
+//    /**
+//     * get a user's denied list
+//     * @return a denied list object
+//     */
+//    public HashMap<Long, User> getDeniedList() {
+//        return deniedList;
+//    }
+//
+//    /**
+//     * set a denied list object
+//     * @param deniedList new object to replace the existing one
+//     */
+//    public void setDeniedList(HashMap<Long, User> deniedList) {
+//        this.deniedList = deniedList;
+//    }
+//
+//    /**
+//     * get a user's owned game list
+//     * @return the list of objects
+//     */
+//    public HashMap<UUID, Game> getUserGameList() {
+//        return userGameList;
+//    }
+//
+//    /**
+//     * set a list of owned game objects for this user
+//     * @param userGameList list of objects to set
+//     */
+//    public void setUserGameList(HashMap<UUID, Game> userGameList) {
+//        this.userGameList = userGameList;
+//    }
+//
+//    /**
+//     * get a user's liked game list
+//     * @return a list of liked games objects for the user
+//     */
+//    public HashMap<UUID, Game> getUserLikeList() {
+//        return userLikeList;
+//    }
+//
+//    /**
+//     * set a list of liked games objects for this user
+//     * @param userLikeList the list of objects to set
+//     */
+//    public void setUserLikeList(HashMap<UUID, Game> userLikeList) {
+//        this.userLikeList = userLikeList;
+//    }
 
     public Blob getIcon() {
         return icon;
@@ -353,6 +353,13 @@ public class User {
         this.icon = icon;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
     public boolean equals(Object o) {

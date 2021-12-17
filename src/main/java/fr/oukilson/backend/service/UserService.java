@@ -4,7 +4,6 @@ import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 
 public class UserService {
 
