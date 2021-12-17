@@ -1,0 +1,18 @@
+package fr.oukilson.backend.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserCreationDTO {
+
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
+}
