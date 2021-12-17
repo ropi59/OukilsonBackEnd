@@ -22,10 +22,14 @@ public class User {
     private String email;
     private String nickname;
     private Blob icon;
-    private List<Token> token;
+//    private Set<Token> token;
+//    @OneToMany
     private HashMap<Long, User> friendList;
     private HashMap<Long, User> deniedList;
+//    @OneToMany//(mappedBy = "")
     private HashMap<UUID, Game> userGameList;
+//    @OneToMany//(mappedBy = "")
+
     private HashMap<UUID, Game> userLikeList;
 
 
@@ -51,7 +55,6 @@ public class User {
         this.deniedList = new HashMap<Long, User>();
         this.userGameList = new HashMap<UUID, Game>();
         this.userLikeList = new HashMap<UUID, Game>();
-        this.token = new ArrayList<Token>();
     }
 
     //methods
@@ -348,14 +351,6 @@ public class User {
 
     public void setIcon(Blob icon) {
         this.icon = icon;
-    }
-
-    public List<Token> getToken() {
-        return token;
-    }
-
-    public void setToken(List<Token> token) {
-        this.token = token;
     }
 
 

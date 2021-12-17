@@ -1,9 +1,10 @@
 package fr.oukilson.backend.controller;
 
+import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.service.UserService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
@@ -14,5 +15,10 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<UserCreationDTO> createUser(@RequestBody UserCreationDTO userCreationDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userCreationDTO));
     }
 }
