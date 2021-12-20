@@ -1,6 +1,7 @@
 package fr.oukilson.backend.service;
 
 import fr.oukilson.backend.dto.UserCreationDTO;
+import fr.oukilson.backend.dto.CreationResponseDTO;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -55,14 +56,17 @@ public class UserService {
      * @param userCreationDTO the DTO extracted from the body
      * @return a userCreationDTO
      */
-    public UserCreationDTO createUser(UserCreationDTO userCreationDTO) {
-        // creates an user to map usercreationdto into
+    public CreationResponseDTO createUser(UserCreationDTO userCreationDTO) {
+        // creates a user to map usercreationdto into
         User user = null;
         // checks if input is valid then map into an entity to save it to the database
         if(emailPattern.matcher(userCreationDTO.getEmail()).find()
-                && nicknamePattern.matcher(userCreationDTO.getNickname()).find())
-           user = this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
-        // map the user object as a DTO to send it back to the controller
-        return this.modelMapper.map(user, UserCreationDTO.class);
+                && nicknamePattern.matcher(userCreationDTO.getNickname()).find()) {
+            user = this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
+            return new CreationResponseDTO(true, "User was successfully created");
+        }
+        else {
+            return new CreationResponseDTO(false, "User was not created");
+        }
     }
 }

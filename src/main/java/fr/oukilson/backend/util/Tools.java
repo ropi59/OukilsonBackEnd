@@ -1,4 +1,4 @@
-package fr.oukilson.backend.utils;
+package fr.oukilson.backend.util;
 
 import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.entity.User;

@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,11 +15,7 @@ public class UserServiceTest {
     @DisplayName("testing email checking method")
     public void emailIsValidAssertTrue(){
         String[] emails = {"jeanpierre@email.com", ".j@e.c", "jeanpierre@email.com.", "jeanpierre@yahoo.com"};
-        Dotenv dotenv = Dotenv.load();
-        Pattern pattern = Pattern.compile("^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
-        String string = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        System.out.println(string.length());
-        System.out.println(Pattern.compile(dotenv.get("EMAIL_REGEX")));
+        String emailRegex;
 //        Assertions.assertTrue(Pattern.compile(dotenv.get("EMAIL_REGEX")).matcher(emails[0]).find());
 //        Assertions.assertFalse(Pattern.compile(dotenv.get("EMAIL_REGEX")).matcher(emails[1]).find());
 //        Assertions.assertFalse(Pattern.compile(dotenv.get("EMAIL_REGEX")).matcher(emails[2]).find());

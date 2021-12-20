@@ -1,5 +1,7 @@
 package fr.oukilson.backend.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import java.util.*;
 
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
 public class User {
 
 
@@ -27,38 +31,6 @@ public class User {
         this.id = id;
         this.password = password;
         this.email = email;
-        this.nickname = nickname;
-    }
-
-    //g&s
-
-
-    public Long getId() {
-        return id;
-    }
-
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
