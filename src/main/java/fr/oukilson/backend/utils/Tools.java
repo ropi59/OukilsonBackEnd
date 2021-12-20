@@ -4,6 +4,7 @@ import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.entity.User;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ public class Tools {
      * @param map list of users to verify
      * @return true if user is on list, false otherwise
      */
-    public static boolean userOnList(User user, HashMap<Long, User> map){
+    public static boolean userOnList(User user, Map<Long, User> map){
         return map.containsKey(user.getId());
     }
 

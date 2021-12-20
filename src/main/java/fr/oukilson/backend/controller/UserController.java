@@ -11,12 +11,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
+    /*
+    declares the beaned service as an attribute then inject it inside the constructor
+     */
     private UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * method to save a user in the database
+     * @param userCreationDTO the user object to be saved
+     * @return a response entity validating the created user
+     */
     @PostMapping()
     public ResponseEntity<UserCreationDTO> createUser(@RequestBody UserCreationDTO userCreationDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createUser(userCreationDTO));
