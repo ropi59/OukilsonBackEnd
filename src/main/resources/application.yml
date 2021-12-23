@@ -4,6 +4,16 @@ spring:
     url: jdbc:mysql://localhost:3306/oukilson
     username: root
     password: root
+  #Activate multi_download
+  servlet:
+    multipart:
+      #threshold after files are write on disc
+      file-size-threshold: 2KB
+      #max file-size accepted
+      max-file-size: 200MB
+      #max request-size allowed
+      max-request-size: 215MB
+
 oukilson:
   game:
     creator-name-max-length: 45
@@ -11,3 +21,8 @@ oukilson:
 
 server:
   port: 8090
+
+#custom properties path to the location of the downloads folder
+file:
+  upload-dir: C\Users\Administrateur\Desktop\oukilson\iconSaved
+

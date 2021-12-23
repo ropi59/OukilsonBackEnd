@@ -18,7 +18,8 @@ public class Icon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-    private String IconUrl;
-    private String IconType;
-    private Long IconSize;
+    private String fileName;
+    private String iconUri;
+    private String iconType;
+    private Long iconSize;
 }
