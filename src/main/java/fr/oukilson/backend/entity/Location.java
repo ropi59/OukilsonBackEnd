@@ -1,7 +1,5 @@
 package fr.oukilson.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "location")
-@JsonIdentityInfo(generator = ObjectIdGenerators.UUIDGenerator.class, property = "@location_id")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,7 +48,7 @@ public class Location {
 	 * @throws IllegalArgumentException returns exception if input is too long or too short
 	 */
 	public void setTown(String town) throws IllegalArgumentException{
-		if (Tools.checkLength(town, 45)) {
+		if (Tools.checkLength(town, 100)) {
 			this.town = town;
         }
 	}
@@ -62,7 +59,7 @@ public class Location {
 	 * @throws IllegalArgumentException returns exception if input isn't in valid zip_code
 	 */
 	public void setZip_code(String zip_code) throws IllegalArgumentException{
-		if (Tools.checkLength(zip_code, 5))
+		if (Tools.checkValidString(zip_code, 10,  4))
 			this.zip_code = zip_code;
     }
 
@@ -72,8 +69,7 @@ public class Location {
 	 * @throws IllegalArgumentException returns exception if input is too long or empty
 	 */
 	public void setAdress(String adress) throws IllegalArgumentException{
-		//TODO modify adress length in db up to 150 char (45 too short to number, street type and street name)
-		if (Tools.checkLength(adress, 150)) {
+		if (Tools.checkLength(adress, 200)) {
 			this.adress = adress;
         }
 	}

@@ -1,8 +1,5 @@
 package fr.oukilson.backend.entity;
 
-
-import java.util.HashMap;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Tools {
@@ -112,11 +109,6 @@ public class Tools {
         return isValid;
     }
 
-
-
-
-
-
         /**
          * compares a string of characters to a given regex and returns matching status
          * @param regex string of characters that define the accepted or *not* accepted list of chars
@@ -127,23 +119,4 @@ public class Tools {
             boolean isValid = Pattern.compile(regex).matcher(string).find();
             return isValid;
         }
-
-
-        /**
-         * function checks if a user is already on a list by using its UUID
-         * @param user user to check
-         * @param map list of users to verify
-         * @return true if user is on list, false otherwise
-         */
-        public static boolean userOnList (User user, HashMap map){
-            boolean isOnList = false;
-            if (map.containsKey(user.getUUID())) {
-                isOnList = true;
-            }
-            return isOnList;
-        }
-
-
-
-
     }
