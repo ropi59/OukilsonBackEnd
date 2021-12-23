@@ -7,13 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameDTO {
+public class GameUuidDTO {
     private String uuid;
     private String name;
-    private int minPlayer;
-    private int maxPlayer;
-    private int minTime;
-    private int maxTime;
-    private int age;
-    private String creatorName;
 }
