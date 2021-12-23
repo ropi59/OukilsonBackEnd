@@ -16,9 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Location {
 
-	/**
-	 * attributes
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Setter
