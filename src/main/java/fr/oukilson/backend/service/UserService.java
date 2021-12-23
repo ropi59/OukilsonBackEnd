@@ -7,7 +7,11 @@ import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
+
 
 public class UserService {
 
@@ -16,40 +20,17 @@ public class UserService {
      */
     private UserRepository userRepository;
     private ModelMapper modelMapper;
-    private Pattern emailPattern;
-    private Pattern nicknamePattern;
-    private Pattern namePattern;
+    private List<Pattern> regexCollection;
+
 
     public UserService(UserRepository userRepository, ModelMapper modelMapper,
-                       @Qualifier("emailPattern") Pattern emailPattern,
-                       @Qualifier("nicknamePattern") Pattern nicknamePattern,
-                       @Qualifier("namePattern") Pattern namePattern) {
+                       List<Pattern> regexCollection) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.emailPattern = emailPattern;
-        this.nicknamePattern = nicknamePattern;
-        this.namePattern = namePattern;
+        this.regexCollection = regexCollection;
+        System.out.println("constructor param test: " + regexCollection);
+        System.out.println("constructor builder test: " + this.regexCollection);
     }
-
-
-    /**
-     * checks the email's validity against a pre-established pattern
-     * @param email String to check
-     * @return true if valid
-     */
-    public boolean emailIsValid(String email){
-        return emailPattern.matcher(email).find();
-    }
-
-    /**
-     * checks the nickname's validity against a pre-established pattern
-     * @param nickname String to check
-     * @return true if valid
-     */
-    public boolean nicknameIsValid(String nickname){
-        return nicknamePattern.matcher(nickname).find();
-    }
-
 
     /**
      * method to save a user entity to the database
@@ -57,12 +38,10 @@ public class UserService {
      * @return a userCreationDTO
      */
     public CreationResponseDTO createUser(UserCreationDTO userCreationDTO) {
-        // creates a user to map usercreationdto into
-        User user = null;
         // checks if input is valid then map into an entity to save it to the database
-        if(emailPattern.matcher(userCreationDTO.getEmail()).find()
-                && nicknamePattern.matcher(userCreationDTO.getNickname()).find()) {
-            user = this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
+        if(this.regexCollection.get(0).matcher(userCreationDTO.getEmail()).find()
+                && this.regexCollection.get(1).matcher(userCreationDTO.getNickname()).find()) {
+            this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
             return new CreationResponseDTO(true, "User was successfully created");
         }
         else {
