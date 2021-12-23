@@ -12,7 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventCreateDTO {
-    private String uuid;
     private String title;
     private UserNameDTO creator;
     private GameUuidDTO game;
@@ -20,6 +19,7 @@ public class EventCreateDTO {
     private int maxPlayer;
     private Date creationDate;
     private Date startingDate;
+    private Date limitDate;
     private Date endingDate;
     private String description;
     private boolean isPrivate;

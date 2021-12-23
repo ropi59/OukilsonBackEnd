@@ -21,6 +21,7 @@ public class EventUpdateDTO {
     private Date creationDate;
     private Date startingDate;
     private Date endingDate;
+    private Date limitDate;
     private String description;
     private boolean isPrivate;
     private Location location;
