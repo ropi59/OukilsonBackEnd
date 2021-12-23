@@ -38,16 +38,24 @@ public class UserServiceTest {
     private UserService userService;
 
 
+    /**
+     * tests the create user function
+     * create a response to compare the result to
+     * tell the test what to expect and verify the result
+     */
     @Test
     public void testCreateUser_AssertTrue(){
         CreationResponseDTO creationResponseDTO = new CreationResponseDTO(true, "success");
         UserCreationDTO userCreationDTO = new UserCreationDTO("password", "hello@example.com", "nickname");
         when(userService.createUser(any(UserCreationDTO.class))).thenReturn(creationResponseDTO);
-        creationResponseDTO = userService.createUser(userCreationDTO);
-        Assertions.assertTrue(creationResponseDTO.isSuccess());
+        CreationResponseDTO newCreationResponseDTO = userService.createUser(userCreationDTO);
+        Assertions.assertTrue(newCreationResponseDTO.isSuccess());
     }
 
 
+    /**
+     * test email regex
+     */
     @Test
     @DisplayName("testing email checking method")
     public void emailIsValidAssertTrue(){
@@ -59,6 +67,9 @@ public class UserServiceTest {
         Assertions.assertTrue(Pattern.compile(emailRegex).matcher("hello@example.com").find());
     }
 
+    /**
+     * test nickname regex
+     */
     @Test
     @DisplayName("testing username validation method")
     public void nicknameIsValid(){
