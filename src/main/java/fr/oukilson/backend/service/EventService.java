@@ -2,6 +2,7 @@ package fr.oukilson.backend.service;
 
 import fr.oukilson.backend.dto.event.EventCreateDTO;
 import fr.oukilson.backend.dto.event.EventDTO;
+import fr.oukilson.backend.dto.event.EventSearchDTO;
 import fr.oukilson.backend.dto.event.EventUpdateDTO;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
@@ -12,9 +13,7 @@ import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class EventService {
     private EventRepository repository;
@@ -99,6 +98,22 @@ public class EventService {
             this.repository.save(event);
             result = this.mapper.map(event, EventUpdateDTO.class);
         }
+        return result;
+    }
+
+    public List<EventDTO> findByFilter(EventSearchDTO toSearch) {
+        // Get events
+        List<Event> events;
+        if (toSearch.getStartingDate() != null) {
+            events = this.repository.findAllByStartingDateAfter(toSearch.getStartingDate());
+        } else if (toSearch.getTown() != null) {
+            events = this.repository.findAllByLocationTown(toSearch.getTown());
+        } else
+            events = new ArrayList<>();
+
+        // Construct result
+        List<EventDTO> result = new ArrayList<>();
+        events.forEach(e -> result.add(this.mapper.map(e, EventDTO.class)));
         return result;
     }
 }
