@@ -64,7 +64,7 @@ public class Event {
         return this.registeredUsers.add(user);
     }
 
-    public boolean addUserInwaitingList(User user) {
+    public boolean addUserInWaitingList(User user) {
         return this.waitingUsers.add(user);
     }
 }
