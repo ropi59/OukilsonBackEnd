@@ -28,8 +28,6 @@ public class UserService {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.regexCollection = regexCollection;
-        System.out.println("constructor param test: " + regexCollection);
-        System.out.println("constructor builder test: " + this.regexCollection);
     }
 
     /**

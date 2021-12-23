@@ -21,8 +21,16 @@ public class User {
     private String password;
     private String email;
     private String nickname;
-
-
+    @ManyToMany
+    @JoinTable(name = "friend_list",
+    joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "friend_id")})
+    private List<User> friendList;
+    @ManyToMany
+    @JoinTable(name = "denied_list",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "denied_id")})
+    private List<User> deniedList;
 
     public User() {
     }
@@ -32,8 +40,39 @@ public class User {
         this.password = password;
         this.email = email;
         this.nickname = nickname;
+        this.friendList = new ArrayList<>();
+        this.deniedList = new ArrayList<>();
+
     }
 
+    // list methods
+    public List<User> addUserToFriendList(User user){
+        this.friendList.add(user);
+        return this.friendList;
+    }
+
+    public List<User> removeUserFromFriendList(User user){
+        this.friendList.remove(user);
+        return this.friendList;
+    }
+
+    public List<User> addUserToDeniedList(User user){
+        this.deniedList.add(user);
+        return this.deniedList;
+    }
+
+    public List<User> removeUserFromDeniedList(User user){
+        this.deniedList.remove(user);
+        return this.deniedList;
+    }
+
+    public void emptyFriendList(){
+        this.friendList.forEach(user -> this.friendList.remove(user));
+    }
+
+    public void emptyDeniedList(){
+        this.deniedList.forEach(user -> this.deniedList.remove(user));
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
