@@ -22,7 +22,7 @@ public class Game {
     // Duration in minutes
     private int minTime;
     private int maxTime;
-    private int age;
+    private int minAge;
     private String creatorName;
 
 }

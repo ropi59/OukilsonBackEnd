@@ -27,16 +27,13 @@ public class GameService {
      * Return a list of games
      * @return List<gameDTO>
      */
-
-    /**
-    public List<gameDTO> findAll() {
-        List<gameDTO> gameDTOList = new ArrayList<>();
-        this.repository.findAll().forEach(employe -> {
-            gameDTOList.add(mapper.map(employe, gameDTO.class));
+    public List<GameDTO> findAll() {
+        List<GameDTO> gameDTOList = new ArrayList<>();
+        this.repository.findAll().forEach(game -> {
+            gameDTOList.add(mapper.map(game, GameDTO.class));
         });
         return gameDTOList;
     }
-*/
 
 
     /**
@@ -44,10 +41,12 @@ public class GameService {
      * @param id Long
      * @return Optional<GameDTO>
      */
-    public Optional<GameDTO> findById(final int id) throws NoSuchElementException {
+    public Optional<GameDTO> findById(final Long id) throws NoSuchElementException {
         Optional<Game> game = this.repository.findById(id);
         return Optional.of(mapper.map(game.get(), GameDTO.class));
     }
+
+
 
 
 
