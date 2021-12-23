@@ -1,14 +1,12 @@
 package fr.oukilson.backend.controller;
 
-import fr.oukilson.backend.dto.event.EventCreateDTO;
-import fr.oukilson.backend.dto.event.EventDTO;
-import fr.oukilson.backend.dto.event.EventDeleteDTO;
-import fr.oukilson.backend.dto.event.EventUpdateDTO;
+import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.service.EventService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -36,13 +34,18 @@ public class EventController {
         return result;
     }
 
-    //TODO
+    /**
+     * Search for an event by one of this two options :
+     * - date after the provided date
+     * - happening in a town
+     * @param toSearch EventSearchDTO
+     * @return List<EventDTO>
+     */
     @ResponseBody
-    @GetMapping("search")
-    public List<EventDTO> findAllByFilters() {
-        return null;
+    @GetMapping("/search")
+    public List<EventDTO> findAllByFilters(@RequestBody EventSearchDTO toSearch) {
+        return this.service.findByFilter(toSearch);
     }
-
 
     /**
      * Route to create a new event
