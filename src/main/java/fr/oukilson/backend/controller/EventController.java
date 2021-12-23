@@ -51,7 +51,15 @@ public class EventController {
      */
     @PostMapping
     public ResponseEntity<EventCreateDTO> save(@RequestBody EventCreateDTO toCreate) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.service.save(toCreate));
+        ResponseEntity<EventCreateDTO> result;
+        try {
+            EventCreateDTO event = this.service.save(toCreate);
+            result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+        }
+        catch(Exception e) {
+            result = ResponseEntity.badRequest().build();
+        }
+        return result;
     }
 
     /**
