@@ -22,6 +22,6 @@ public class EventCreateDTO {
     private Date limitDate;
     private Date endingDate;
     private String description;
-    private boolean isPrivate;
+    private Boolean isPrivate;
     private Location location;
 }

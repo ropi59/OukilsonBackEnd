@@ -21,7 +21,7 @@ public class EventDTO {
     private Date endingDate;
     private Date limitDate;
     private String description;
-    private boolean isPrivate;
+    private Boolean isPrivate;
     private Location location;
     // Users registered in the event
     private List<UserNameDTO> registeredUsers = new ArrayList<>();
