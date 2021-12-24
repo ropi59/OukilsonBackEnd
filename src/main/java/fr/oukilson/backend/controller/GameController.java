@@ -43,19 +43,29 @@ public class GameController {
     }
 
     @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<GameUuidDTO> getPost(@PathVariable String uuid) {
-        // J'appelle mon service pour récupérer mon article
-        // L'article peut être NULL ou Rempli
+    public ResponseEntity<GameUuidDTO> getUuid(@PathVariable String uuid) {
         GameUuidDTO gameUuidDTO = service.findByUuid(uuid);
-        // Je verifie si mon article est null
         if (gameUuidDTO == null) {
-            // SI il est null
-            // Je construit une RESPONSE de type 404
             return ResponseEntity.notFound().build();
         }
-        // SI il est plein
-        // Je construit une RESPONSE de type 200
-        // AVEC l'article récupéré
+        return ResponseEntity.ok().body(gameUuidDTO);
+    }
+
+    @GetMapping("/display/{uuid}")
+    public ResponseEntity<GameDTO> displayUuid(@PathVariable String uuid) {
+        GameDTO gameDTO = service.DisplayByUuid(uuid);
+        if (gameDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(gameDTO);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<GameUuidDTO> getName(@PathVariable String name) {
+        GameUuidDTO gameUuidDTO = service.findByName(name);
+        if (gameUuidDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().body(gameUuidDTO);
     }
 
