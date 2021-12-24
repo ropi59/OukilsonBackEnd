@@ -5,6 +5,10 @@ import fr.oukilson.backend.dtos.GameDTO;
 import fr.oukilson.backend.entities.Game;
 import fr.oukilson.backend.repository.GameRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +50,17 @@ public class GameService {
         return Optional.of(mapper.map(game.get(), GameDTO.class));
     }
 
-
-
+    /**
+     * Persists a game
+     * @param gameDTO GameDTO
+     * @return EmployeDTO
+     */
+    public GameDTO save(GameDTO gameDTO) {
+        Game game = mapper.map(gameDTO, Game.class);
+        Game gameSaving = this.repository.save(game);
+        GameDTO response = mapper.map(gameSaving, GameDTO.class);
+        return response;
+    }
 
 
 
