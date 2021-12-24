@@ -17,9 +17,8 @@ public class EventCreateDTO {
     private GameUuidDTO game;
     private int minPlayer;
     private int maxPlayer;
-    private Date creationDate;
-    private Date startingDate;
     private Date limitDate;
+    private Date startingDate;
     private Date endingDate;
     private String description;
     private Boolean isPrivate;
