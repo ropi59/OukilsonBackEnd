@@ -1,6 +1,7 @@
 package fr.oukilson.backend.controller;
 
 import fr.oukilson.backend.dtos.GameDTO;
+import fr.oukilson.backend.dtos.GameUuidDTO;
 import fr.oukilson.backend.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,12 +43,12 @@ public class GameController {
     }
 
     @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<GameDTO> getPost(@PathVariable String uuid) {
+    public ResponseEntity<GameUuidDTO> getPost(@PathVariable String uuid) {
         // J'appelle mon service pour récupérer mon article
         // L'article peut être NULL ou Rempli
-        GameDTO gameDTO = service.findByUuid(uuid);
+        GameUuidDTO gameUuidDTO = service.findByUuid(uuid);
         // Je verifie si mon article est null
-        if (gameDTO == null) {
+        if (gameUuidDTO == null) {
             // SI il est null
             // Je construit une RESPONSE de type 404
             return ResponseEntity.notFound().build();
@@ -55,7 +56,7 @@ public class GameController {
         // SI il est plein
         // Je construit une RESPONSE de type 200
         // AVEC l'article récupéré
-        return ResponseEntity.ok().body(gameDTO);
+        return ResponseEntity.ok().body(gameUuidDTO);
     }
 
 }

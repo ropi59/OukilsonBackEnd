@@ -2,6 +2,7 @@ package fr.oukilson.backend.services;
 
 
 import fr.oukilson.backend.dtos.GameDTO;
+import fr.oukilson.backend.dtos.GameUuidDTO;
 import fr.oukilson.backend.entities.Game;
 import fr.oukilson.backend.repository.GameRepository;
 import org.modelmapper.ModelMapper;
@@ -82,21 +83,21 @@ public class GameService {
      * @param uuid
      * @return
      */
-    public GameDTO findByUuid(String uuid) {
+    public GameUuidDTO findByUuid(String uuid) {
         // All the games are selected
         List<Game> games = repository.findAll();
         // Game targeted is instanced
-        GameDTO targetedGameDTO = new GameDTO();
+        GameUuidDTO targetedGameUuidDTO = new GameUuidDTO();
         // Loop on all the games
         for ( Game game : games) {
             String testedUuid = game.getUuid();
             // Test on uuid
             if (testedUuid.equals(uuid)) {
-                targetedGameDTO = mapper.map(game, GameDTO.class);
+                targetedGameUuidDTO = mapper.map(game, GameUuidDTO.class);
                 //break;
             }
         }
-        return targetedGameDTO;
+        return targetedGameUuidDTO;
     }
 
 
