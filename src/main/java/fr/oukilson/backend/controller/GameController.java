@@ -41,4 +41,21 @@ public class GameController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/uuid/{uuid}")
+    public ResponseEntity<GameDTO> getPost(@PathVariable String uuid) {
+        // J'appelle mon service pour récupérer mon article
+        // L'article peut être NULL ou Rempli
+        GameDTO gameDTO = service.findByUuid(uuid);
+        // Je verifie si mon article est null
+        if (gameDTO == null) {
+            // SI il est null
+            // Je construit une RESPONSE de type 404
+            return ResponseEntity.notFound().build();
+        }
+        // SI il est plein
+        // Je construit une RESPONSE de type 200
+        // AVEC l'article récupéré
+        return ResponseEntity.ok().body(gameDTO);
+    }
+
 }

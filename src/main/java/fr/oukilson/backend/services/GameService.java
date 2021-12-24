@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 
 public class GameService {
 
@@ -61,8 +59,45 @@ public class GameService {
         GameDTO response = mapper.map(gameSaving, GameDTO.class);
         return response;
     }
+/*
+    public PostDTO findBySlug(String slug) {
+        // Je crée ma variable qui va contenir mon DTO
+        PostDTO postDTO = null;
+        // Me renvoi un article, mais on ne sait pas s'il existe
+        Optional<Post> optionnalPost = this.repository.findBySlug(slug);
+        // On va vérifier si l'article existe
+        if(optionnalPost.isPresent()) {
+            // Je récupère mon article
+            Post post = optionnalPost.get();
+            // Je map mon entité Post en DTO PostDTO
+            postDTO = mapper.map(post, PostDTO.class);
+        }
+        return postDTO;
+    }
 
+ */
 
+    /**
+     * Gives a game in function of its uuid
+     * @param uuid
+     * @return
+     */
+    public GameDTO findByUuid(String uuid) {
+        // All the games are selected
+        List<Game> games = repository.findAll();
+        // Game targeted is instanced
+        GameDTO targetedGameDTO = new GameDTO();
+        // Loop on all the games
+        for ( Game game : games) {
+            String testedUuid = game.getUuid();
+            // Test on uuid
+            if (testedUuid.equals(uuid)) {
+                targetedGameDTO = mapper.map(game, GameDTO.class);
+                //break;
+            }
+        }
+        return targetedGameDTO;
+    }
 
 
 
