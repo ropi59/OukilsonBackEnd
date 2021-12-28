@@ -46,23 +46,35 @@ public class User {
     }
 
     // list methods
-    public List<User> addUserToFriendList(User user){
-        this.friendList.add(user);
+    public List<User> addUserToFriendList(User user) throws Exception {
+        if(!this.friendList.contains(user))
+            this.friendList.add(user);
+        else
+            throw new Exception("User is already on list");
         return this.friendList;
     }
 
-    public List<User> removeUserFromFriendList(User user){
-        this.friendList.remove(user);
+    public List<User> removeUserFromFriendList(User user) throws Exception {
+        if(this.friendList.contains(user))
+            this.friendList.remove(user);
+        else
+            throw new Exception("User is not on list");
         return this.friendList;
     }
 
-    public List<User> addUserToDeniedList(User user){
-        this.deniedList.add(user);
+    public List<User> addUserToDeniedList(User user) throws Exception {
+        if(!this.deniedList.contains(user))
+            this.deniedList.add(user);
+        else
+            throw new Exception("User is already on list");
         return this.deniedList;
     }
 
-    public List<User> removeUserFromDeniedList(User user){
-        this.deniedList.remove(user);
+    public List<User> removeUserFromDeniedList(User user) throws Exception {
+        if(this.deniedList.contains(user))
+            this.deniedList.remove(user);
+        else
+            throw new Exception("User is not on list");
         return this.deniedList;
     }
 
@@ -73,6 +85,8 @@ public class User {
     public void emptyDeniedList(){
         this.deniedList.forEach(user -> this.deniedList.remove(user));
     }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
