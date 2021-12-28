@@ -76,9 +76,9 @@ public class UserServiceTest {
 
     @Test
     public void testCreateUser_AssertFalse(){
-        when(userService.createUser(any(UserCreationDTO.class))).thenReturn(creationResponseDTOInvalid());
-        CreationResponseDTO creationResponseDTO = userService.createUser(userCreationDTOInvalid());
-        Assertions.assertFalse(creationResponseDTO.isSuccess());
+        when(userRepository.save(any(User.class))).thenReturn(user());
+        CreationResponseDTO newCreationResponseDTO = userService.createUser(userCreationDTOInvalid());
+        Assertions.assertFalse(newCreationResponseDTO.isSuccess());
     }
 
 
