@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreationResponseDTO {
+public class ResponseDTO {
 
     private boolean success;
     private String message;

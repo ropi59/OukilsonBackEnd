@@ -1,6 +1,6 @@
 package fr.oukilson.backend.controller;
 
-import fr.oukilson.backend.dto.CreationResponseDTO;
+import fr.oukilson.backend.dto.ResponseDTO;
 import fr.oukilson.backend.dto.UserCreationDTO;
 import com.google.gson.Gson;
 import fr.oukilson.backend.service.UserService;
@@ -35,8 +35,8 @@ public class UserControllerTest {
     @Test
     public void testCreateUser() throws Exception{
         UserCreationDTO userCreationDTO = userCreationDTO();
-        CreationResponseDTO creationResponseDTO = new CreationResponseDTO(true, "success");
-        given(userService.createUser(userCreationDTO)).willReturn(creationResponseDTO);
+        ResponseDTO responseDTO = new ResponseDTO(true, "success");
+        given(userService.createUser(userCreationDTO)).willReturn(responseDTO);
         this.mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson().toJson(userCreationDTO)))

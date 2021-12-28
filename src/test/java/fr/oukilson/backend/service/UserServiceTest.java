@@ -1,6 +1,6 @@
 package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dto.CreationResponseDTO;
+import fr.oukilson.backend.dto.ResponseDTO;
 import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
@@ -8,18 +8,14 @@ import fr.oukilson.backend.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import org.springframework.test.context.junit4.SpringRunner;
-
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,12 +50,12 @@ public class UserServiceTest {
         return new User(1L, "password", "hello@example.com", "nickname");
     }
 
-    public CreationResponseDTO creationResponseDTO(){
-        return new CreationResponseDTO(true, "User successfully created.");
+    public ResponseDTO creationResponseDTO(){
+        return new ResponseDTO(true, "User successfully created.");
     }
 
-    public CreationResponseDTO creationResponseDTOInvalid(){
-        return new CreationResponseDTO(false, "User creation failed.");
+    public ResponseDTO creationResponseDTOInvalid(){
+        return new ResponseDTO(false, "User creation failed.");
     }
     /**
      * tests the create user function
@@ -69,16 +65,16 @@ public class UserServiceTest {
     @Test
     public void testCreateUser_AssertTrue() {
         when(userRepository.save(any(User.class))).thenReturn(user());
-        CreationResponseDTO newCreationResponseDTO = userService.createUser(userCreationDTO());
-        Assertions.assertTrue(newCreationResponseDTO.isSuccess());
+        ResponseDTO newResponseDTO = userService.createUser(userCreationDTO());
+        Assertions.assertTrue(newResponseDTO.isSuccess());
 //        verify(userRepository).save(user());
     }
 
     @Test
     public void testCreateUser_AssertFalse(){
         when(userRepository.save(any(User.class))).thenReturn(user());
-        CreationResponseDTO newCreationResponseDTO = userService.createUser(userCreationDTOInvalid());
-        Assertions.assertFalse(newCreationResponseDTO.isSuccess());
+        ResponseDTO newResponseDTO = userService.createUser(userCreationDTOInvalid());
+        Assertions.assertFalse(newResponseDTO.isSuccess());
     }
 
 
