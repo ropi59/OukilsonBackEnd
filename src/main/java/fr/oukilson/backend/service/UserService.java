@@ -35,6 +35,7 @@ public class UserService {
      */
     public CreationResponseDTO createUser(UserCreationDTO userCreationDTO) {
         // checks if input is valid then map into an entity to save it to the database
+        System.out.println(regexCollection.getEmailPattern());
         if(this.regexCollection.getEmailPattern().matcher(userCreationDTO.getEmail()).find()
                 && this.regexCollection.getNicknamePattern().matcher(userCreationDTO.getNickname()).find()) {
             this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));

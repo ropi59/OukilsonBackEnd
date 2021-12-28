@@ -14,37 +14,33 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
-
-
-
-    @MockBean
-    private UserRepository userRepository;
+    @InjectMocks
+    private UserService userService;
 
     @Mock
-    private UserService userService;
+    UserRepository userRepository;
+
+    @Mock
+    ModelMapper modelMapper;
+
+    @Mock
+    RegexCollection regexCollection;
+
+
 
     public UserCreationDTO userCreationDTO(){
         return new UserCreationDTO("password", "hello@example.com", "nickname");
@@ -72,8 +68,7 @@ public class UserServiceTest {
      */
     @Test
     public void testCreateUser_AssertTrue() {
-//        when(userRepository.save(any(User.class))).thenReturn(user());
-        when(userService.createUser(userCreationDTO())).thenReturn(creationResponseDTO());
+        when(userRepository.save(any(User.class))).thenReturn(user());
         CreationResponseDTO newCreationResponseDTO = userService.createUser(userCreationDTO());
         Assertions.assertTrue(newCreationResponseDTO.isSuccess());
 //        verify(userRepository).save(user());
