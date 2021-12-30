@@ -4,13 +4,11 @@ import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.dto.ResponseDTO;
 import fr.oukilson.backend.dto.UserDTO;
 import fr.oukilson.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @CrossOrigin

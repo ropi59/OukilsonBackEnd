@@ -3,14 +3,13 @@ package fr.oukilson.backend.service;
 import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.dto.ResponseDTO;
 import fr.oukilson.backend.dto.UserDTO;
-import fr.oukilson.backend.dto.UserOnListDTO;
 import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class UserService {
 
