@@ -15,8 +15,8 @@ public class UserDTO {
     private Long id;
     private String email;
     private String nickname;
-    private List<UserDTO> friendList;
-    private List<UserDTO> deniedList;
+    private List<UserOnListDTO> friendList;
+    private List<UserOnListDTO> deniedList;
 
     public UserDTO(Long id, String email, String nickname) {
         this.id = id;
