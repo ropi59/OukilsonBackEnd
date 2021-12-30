@@ -3,14 +3,14 @@ package fr.oukilson.backend.service;
 import fr.oukilson.backend.dto.UserCreationDTO;
 import fr.oukilson.backend.dto.ResponseDTO;
 import fr.oukilson.backend.dto.UserDTO;
+import fr.oukilson.backend.dto.UserOnListDTO;
 import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UserService {
 
@@ -140,8 +140,12 @@ public class UserService {
             response.setMessage("User not found");
         // empties the friend list of the user then saves the user into the database then modifies the response
         else {
-            user.get().getFriendList().forEach(user1 ->
-                    user.get().getFriendList().remove(user1));
+            // creates an iterator so that we can modify the list(remove elements) while iterating over it
+            Iterator<User> iterator = user.get().getFriendList().iterator();
+            while (iterator.hasNext()){
+                iterator.next();
+                iterator.remove();
+            }
             this.userRepository.save(this.modelMapper.map(user.get(), User.class));
             response.setSuccess(true);
             response.setMessage("List successfully emptied");
