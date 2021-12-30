@@ -46,17 +46,34 @@ public class UserService {
         }
     }
 
+    /**
+     * adds a user to the main user's friend list
+     * @param mainUserId Long
+     * @param secondUserId Long
+     * @return a response saying whether the user was successfully added or not
+     */
     public ResponseDTO addUserToFriendList(Long mainUserId, Long secondUserId) {
+        // attempts to find both users on the database
         Optional<User> mainUser = this.userRepository.findById(mainUserId);
         Optional<User> userToAdd = this.userRepository.findById(secondUserId);
+        // create a default response
         ResponseDTO responseDTO = new ResponseDTO(false, "User was already on list");
-        if(mainUser.isPresent() && userToAdd.isPresent()){
-        if (!mainUser.get().getFriendList().contains(userToAdd.get())) {
-            mainUser.get().getFriendList().add(userToAdd.get());
-            this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-            responseDTO.setMessage("User was successfully added to the list");
-            responseDTO.setSuccess(true);
+        // check if users were found
+        if (mainUser.isEmpty() || userToAdd.isEmpty()) {
+            // modifies the response message
+            responseDTO.setMessage("User(s) not found");
         }
+        else {
+            // checks if the user to add was already on the list
+            if (!mainUser.get().getFriendList().contains(userToAdd.get())) {
+                // adds it
+                mainUser.get().getFriendList().add(userToAdd.get());
+                // modifies the main user object so that it can be saved into the database
+                // and modifies the response message accordingly
+                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
+                responseDTO.setMessage("User was successfully added to the list");
+                responseDTO.setSuccess(true);
+            }
         }
         return responseDTO;
     }

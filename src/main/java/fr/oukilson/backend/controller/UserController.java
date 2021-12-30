@@ -26,7 +26,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/usersus")
+    @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> findAllUsers(){
         return ResponseEntity.ok(this.userService.findAll());
     }
@@ -44,6 +44,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createUser(userCreationDTO));
     }
 
+    /**
+     * queries the service to add a user to another user's friend list, asking
+     * for both users' ids
+     * @param id1 Long, id of the user whose list we wish to modify
+     * @param id2 Long, id of the user we wish to add to the list
+     * @return a response entity
+     */
     @PutMapping("/user/add/{id1}/{id2}")
     public ResponseEntity<ResponseDTO> addUserToFriendList(@PathVariable Long id1,
                                                            @PathVariable Long id2) {
