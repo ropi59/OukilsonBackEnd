@@ -56,4 +56,10 @@ public class UserController {
                                                            @PathVariable Long id2) {
         return ResponseEntity.ok(this.userService.addUserToFriendList(id1, id2));
     }
+
+    @PutMapping("/user/remove/{id1}/{id2}")
+    public ResponseEntity<ResponseDTO> removeUserFromFriendList(@PathVariable Long id1,
+                                                                @PathVariable Long id2) {
+        return ResponseEntity.ok(this.userService.removeUserFromFriendList(id1, id2));
+    }
 }

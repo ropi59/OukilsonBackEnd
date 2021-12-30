@@ -92,4 +92,7 @@ public class UserService {
             list.add(this.modelMapper.map(user, UserDTO.class)));
         return list;
     }
+
+    public removeUserFromFriendList(Long id1, Long id2) {
+    }
 }
