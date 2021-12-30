@@ -28,6 +28,25 @@ public class UserService {
         this.regexCollection = regexCollection;
     }
 
+
+    /*
+    basic get methods for testing purposes
+     */
+    public UserDTO findById(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+        UserDTO userDTO = null;
+        if (user.isPresent())
+            userDTO = this.modelMapper.map(user.get(), UserDTO.class);
+        return userDTO;
+    }
+
+    public List<UserDTO> findAll() {
+        List<UserDTO> list = new ArrayList<>();
+        this.userRepository.findAll().forEach(user ->
+                list.add(this.modelMapper.map(user, UserDTO.class)));
+        return list;
+    }
+
     /**
      * method to save a user entity to the database
      * @param userCreationDTO the DTO extracted from the body
@@ -78,7 +97,6 @@ public class UserService {
         return responseDTO;
     }
 
-
     /**
      * remove a user from a friend list
      * @param id1 Long
@@ -107,19 +125,27 @@ public class UserService {
         return responseDTO;
     }
 
-
-    public UserDTO findById(Long id) {
+    /**
+     * function that empties a friend list
+     * @param id Long
+     * @return a response containing a boolean for success/failure and a message
+     */
+    public ResponseDTO emptyFriendList(Long id) {
+        // attempts to find the user
         Optional<User> user = this.userRepository.findById(id);
-        UserDTO userDTO = null;
-        if (user.isPresent())
-            userDTO = this.modelMapper.map(user.get(), UserDTO.class);
-        return userDTO;
-    }
-
-    public List<UserDTO> findAll() {
-        List<UserDTO> list = new ArrayList<>();
-        this.userRepository.findAll().forEach(user ->
-                list.add(this.modelMapper.map(user, UserDTO.class)));
-        return list;
+        // creating a default response
+        ResponseDTO response = new ResponseDTO(false, "Failed to empty list");
+        // checks if the user was found and modifies the message accordingly
+        if (user.isEmpty())
+            response.setMessage("User not found");
+        // empties the friend list of the user then saves the user into the database then modifies the response
+        else {
+            user.get().getFriendList().forEach(user1 ->
+                    user.get().getFriendList().remove(user1));
+            this.userRepository.save(this.modelMapper.map(user.get(), User.class));
+            response.setSuccess(true);
+            response.setMessage("List successfully emptied");
+        }
+        return response;
     }
 }

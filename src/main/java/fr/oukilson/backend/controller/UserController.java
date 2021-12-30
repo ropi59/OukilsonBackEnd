@@ -51,7 +51,7 @@ public class UserController {
      * @param id2 Long, id of the user we wish to add to the list
      * @return a response entity
      */
-    @PutMapping("/user/add/{id1}/{id2}")
+    @PutMapping("/add/{id1}/{id2}")
     public ResponseEntity<ResponseDTO> addUserToFriendList(@PathVariable Long id1,
                                                            @PathVariable Long id2) {
         return ResponseEntity.ok(this.userService.addUserToFriendList(id1, id2));
@@ -63,9 +63,19 @@ public class UserController {
      * @param id2 Long, id of the user we wish to remove from the list
      * @return a response entity
      */
-    @PutMapping("/user/remove/{id1}/{id2}")
+    @PutMapping("/remove/{id1}/{id2}")
     public ResponseEntity<ResponseDTO> removeUserFromFriendList(@PathVariable Long id1,
                                                                 @PathVariable Long id2) {
         return ResponseEntity.ok(this.userService.removeUserFromFriendList(id1, id2));
+    }
+
+    /**
+     * empties a user's friend list
+     * @param id Long, id of the user whose list we wish to empty
+     * @return a response entity
+     */
+    @PutMapping("/empty/{id}")
+    public ResponseEntity<ResponseDTO> emptyFriendList(@PathVariable Long id) {
+        return ResponseEntity.ok(this.userService.emptyFriendList(id));
     }
 }
