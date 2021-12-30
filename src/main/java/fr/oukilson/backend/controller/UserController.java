@@ -57,6 +57,12 @@ public class UserController {
         return ResponseEntity.ok(this.userService.addUserToFriendList(id1, id2));
     }
 
+    /**
+     * removes a user from another user's friend list
+     * @param id1 Long, id of the user whose list we wish to modify
+     * @param id2 Long, id of the user we wish to remove from the list
+     * @return a response entity
+     */
     @PutMapping("/user/remove/{id1}/{id2}")
     public ResponseEntity<ResponseDTO> removeUserFromFriendList(@PathVariable Long id1,
                                                                 @PathVariable Long id2) {

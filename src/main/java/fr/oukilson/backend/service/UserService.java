@@ -78,6 +78,36 @@ public class UserService {
         return responseDTO;
     }
 
+
+    /**
+     * remove a user from a friend list
+     * @param id1 Long
+     * @param id2 Long
+     * @return a DTO containing a boolean and a message
+     */
+    public ResponseDTO removeUserFromFriendList(Long id1, Long id2) {
+        // attempts to find both users by id
+        Optional<User> mainUser = this.userRepository.findById(id1);
+        Optional<User> userToRemove = this.userRepository.findById(id2);
+        // creates a default response
+        ResponseDTO responseDTO = new ResponseDTO(false, "User was not found on list");
+        // checks if users were found and modifies the message if needed
+        if (mainUser.isEmpty() || userToRemove.isEmpty())
+            responseDTO.setMessage("User not found");
+        else {
+            // check if second user is actually on the first user's friend list
+            if (mainUser.get().getFriendList().contains(userToRemove.get())) {
+                // removes unwanted user, maps main user so that it can be saved, modifies the response
+                mainUser.get().getFriendList().remove(userToRemove.get());
+                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
+                responseDTO.setSuccess(true);
+                responseDTO.setMessage("User was successfully removed from list");
+            }
+        }
+        return responseDTO;
+    }
+
+
     public UserDTO findById(Long id) {
         Optional<User> user = this.userRepository.findById(id);
         UserDTO userDTO = null;
@@ -89,10 +119,7 @@ public class UserService {
     public List<UserDTO> findAll() {
         List<UserDTO> list = new ArrayList<>();
         this.userRepository.findAll().forEach(user ->
-            list.add(this.modelMapper.map(user, UserDTO.class)));
+                list.add(this.modelMapper.map(user, UserDTO.class)));
         return list;
-    }
-
-    public removeUserFromFriendList(Long id1, Long id2) {
     }
 }
