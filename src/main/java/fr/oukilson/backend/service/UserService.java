@@ -78,10 +78,12 @@ public class UserService {
         // create a default response
         ResponseDTO responseDTO = new ResponseDTO(false, "User was already on list");
         // check if users were found
-        if (mainUser.isEmpty() || userToAdd.isEmpty()) {
+        if (mainUser.isEmpty() || userToAdd.isEmpty())
             // modifies the response message
             responseDTO.setMessage("User(s) not found");
-        }
+            // checks if users are different
+        else if (mainUser.equals(userToAdd))
+            responseDTO.setMessage("You cannot befriend yourself");
         else {
             // checks if the user to add was already on the list
             if (!mainUser.get().getFriendList().contains(userToAdd.get())) {
