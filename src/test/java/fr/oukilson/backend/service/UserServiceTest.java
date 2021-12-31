@@ -7,12 +7,15 @@ import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.UUID;
@@ -35,8 +38,6 @@ public class UserServiceTest {
 
     @Mock
     RegexCollection regexCollection;
-
-
 
     public UserCreationDTO userCreationDTO(){
         return new UserCreationDTO("password", "hello@example.com", "nickname");

@@ -6,11 +6,14 @@ import fr.oukilson.backend.dto.UserDTO;
 import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-
+@Service
+@RequiredArgsConstructor
 public class UserService {
 
     /*
@@ -49,7 +52,7 @@ public class UserService {
     /**
      * method to save a user entity to the database
      * @param userCreationDTO the DTO extracted from the body
-     * @return a userCreationDTO
+     * @return a ResponseDTO
      */
     public ResponseDTO createUser(UserCreationDTO userCreationDTO) {
         // checks if input is valid then map into an entity to save it to the database
