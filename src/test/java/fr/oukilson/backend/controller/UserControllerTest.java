@@ -41,6 +41,17 @@ public class UserControllerTest {
         return new UserDTO(1L, "email@email.com", "nickname");
     }
 
+    public UserDTO secondUserDTO(){
+        return new UserDTO(2L, "email2@email.com", "nickname2");
+    }
+
+    public ResponseDTO responseSuccess(){
+        return new ResponseDTO(true, "success");
+    }
+
+    public ResponseDTO responseFail(){
+        return new ResponseDTO(false, "fail");
+    }
     ////////// TESTS OF CREATE USER FUNCTION ////////////
     /**
      * tests that the function creates a user and returns a 201 http code
@@ -48,11 +59,9 @@ public class UserControllerTest {
      */
     @Test
     public void testCreateUser() throws Exception{
-        // creates a user to add
-        UserCreationDTO userCreationDTO = userCreationDTO();
         this.mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreationDTO)))
+                .content(objectMapper.writeValueAsString(userCreationDTO())))
                 .andExpect(status().isCreated());
     }
 
@@ -101,18 +110,16 @@ public class UserControllerTest {
      */
     @Test
     public void testCreateUser_thenMapsToService() throws Exception{
-        // create a user to save & to test against later
-        UserCreationDTO userCreationDTO = userCreationDTO();
         this.mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreationDTO)))
+                .content(objectMapper.writeValueAsString(userCreationDTO())))
                 .andExpect(status().isCreated());
         // create a captor object to store the DTO we send to the service
         ArgumentCaptor<UserCreationDTO> userCreationDTOArgumentCaptor = ArgumentCaptor.forClass(UserCreationDTO.class);
         // checks that the service is called once, then calls it directly using the captor as argument
         verify(userService, times(1)).createUser(userCreationDTOArgumentCaptor.capture());
         // checks if the captor equals the original DTO
-        Assertions.assertEquals(userCreationDTOArgumentCaptor.getValue(), userCreationDTO);
+        Assertions.assertEquals(userCreationDTOArgumentCaptor.getValue(), userCreationDTO());
     }
 
     /**
@@ -121,14 +128,11 @@ public class UserControllerTest {
      */
     @Test
     public void testCreateUser_ThenReturnsResponseDTO() throws Exception{
-        // creates DTOs to save &/or to test against later
-        UserCreationDTO userCreationDTO = userCreationDTO();
-        ResponseDTO responseDTO = new ResponseDTO(true, "success");
         // tells the test that when the service is called it should return the responseDTO object
-        when(userService.createUser(any(UserCreationDTO.class))).thenReturn(responseDTO);
+        when(userService.createUser(any(UserCreationDTO.class))).thenReturn(responseSuccess());
         MvcResult mvcResult = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userCreationDTO)))
+                .content(objectMapper.writeValueAsString(userCreationDTO())))
                 .andExpect(status().isCreated())
                 .andReturn();
         // Transforms the result of the request back into a responseDTO object & check for success
@@ -144,13 +148,9 @@ public class UserControllerTest {
      */
     @Test
     public void testAddUserToFriendList() throws Exception{
-        // create users to add to the db & a response to return later
-        UserDTO userDTO = userDTO();
-        UserDTO userToAddDTO = new UserDTO(2L, "email2@email.com", "nickname2");
-        ResponseDTO responseDTO = new ResponseDTO(true, "success");
         // tell the test to return a given object when calling upon the service & stores them
-        when(userService.findById(1L)).thenReturn(userDTO);
-        when(userService.findById(2L)).thenReturn(userToAddDTO);
+        when(userService.findById(1L)).thenReturn(userDTO());
+        when(userService.findById(2L)).thenReturn(secondUserDTO());
         MvcResult mainUserResult = this.mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -162,7 +162,7 @@ public class UserControllerTest {
         UserOnListDTO userToAdd = objectMapper.readValue(userToAddResult.getResponse().getContentAsString(), UserOnListDTO.class);
         mainUser.getFriendList().add(userToAdd);
         // tell the test to return a given response when calling upon a given service
-        when(userService.addUserToFriendList(anyLong(), anyLong())).thenReturn(responseDTO);
+        when(userService.addUserToFriendList(anyLong(), anyLong())).thenReturn(responseSuccess());
         MvcResult finalResult = this.mockMvc.perform(put("/users/add/1/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mainUser)))
@@ -181,13 +181,9 @@ public class UserControllerTest {
      */
     @Test
     public void testAddUserToFriendList_thenMapsToService() throws Exception {
-        // create objects to manipulate
-        UserDTO userDTO = userDTO();
-        UserDTO userToAddDTO = new UserDTO(2L, "email2@email.com", "nickname2");
-        ResponseDTO responseDTO = new ResponseDTO(true, "success");
         // sets test behaviour
-        when(userService.findById(1L)).thenReturn(userDTO);
-        when(userService.findById(2L)).thenReturn(userToAddDTO);
+        when(userService.findById(1L)).thenReturn(userDTO());
+        when(userService.findById(2L)).thenReturn(secondUserDTO());
         // mock finding users by their id
         MvcResult mainUserResult = this.mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
@@ -200,7 +196,7 @@ public class UserControllerTest {
         UserOnListDTO userToAdd = objectMapper.readValue(userToAddResult.getResponse().getContentAsString(), UserOnListDTO.class);
         mainUser.getFriendList().add(userToAdd);
         // sets the expected response and checks it
-        when(userService.addUserToFriendList(anyLong(), anyLong())).thenReturn(responseDTO);
+        when(userService.addUserToFriendList(anyLong(), anyLong())).thenReturn(responseSuccess());
         this.mockMvc.perform(put("/users/add/1/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mainUser)))
@@ -211,8 +207,8 @@ public class UserControllerTest {
         ArgumentCaptor<Long> userDTOArgumentCaptor2 = ArgumentCaptor.forClass(Long.class);
         verify(userService, times(1))
                 .addUserToFriendList(userDTOArgumentCaptor.capture(), userDTOArgumentCaptor2.capture());
-        Assertions.assertEquals(userDTO.getId(), (long) userDTOArgumentCaptor.getValue());
-        Assertions.assertEquals(userToAddDTO.getId(), (long) userDTOArgumentCaptor2.getValue());
+        Assertions.assertEquals(userDTO().getId(), (long) userDTOArgumentCaptor.getValue());
+        Assertions.assertEquals(secondUserDTO().getId(), (long) userDTOArgumentCaptor2.getValue());
     }
 
     /**
@@ -221,13 +217,9 @@ public class UserControllerTest {
      */
     @Test
     public void testRemoveUserFromFriendList() throws Exception {
-        // create users to remove from the db & a response to return later
-        UserDTO userDTO = userDTO();
-        UserDTO userToRemoveDTO = new UserDTO(2L, "email2@email.com", "nickname2");
-        ResponseDTO responseDTO = new ResponseDTO(true, "successfully removed");
         // tell the test to return a given object when calling upon the service & stores them
-        when(userService.findById(1L)).thenReturn(userDTO);
-        when(userService.findById(2L)).thenReturn(userToRemoveDTO);
+        when(userService.findById(1L)).thenReturn(userDTO());
+        when(userService.findById(2L)).thenReturn(secondUserDTO());
         MvcResult mainUserResult = this.mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -239,7 +231,7 @@ public class UserControllerTest {
         UserOnListDTO userToRemove = objectMapper.readValue(userToAddResult.getResponse().getContentAsString(), UserOnListDTO.class);
         mainUser.getFriendList().remove(userToRemove);
         // tell the test to return a given response when calling upon a given service
-        when(userService.removeUserFromFriendList(anyLong(), anyLong())).thenReturn(responseDTO);
+        when(userService.removeUserFromFriendList(anyLong(), anyLong())).thenReturn(responseSuccess());
         MvcResult finalResult = this.mockMvc.perform(put("/users/remove/1/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mainUser)))
@@ -248,6 +240,43 @@ public class UserControllerTest {
         // maps the returned response into a ResponseDTO object & tests it for validity
         ResponseDTO finalResponse = objectMapper.readValue(finalResult.getResponse().getContentAsString(), ResponseDTO.class);
         Assertions.assertTrue(finalResponse.isSuccess());
-        Assertions.assertEquals("successfully removed", finalResponse.getMessage());
+        Assertions.assertEquals("success", finalResponse.getMessage());
+    }
+
+    /**
+     * tests that the function is working properly and that it calls the service adequately
+     * @throws Exception an exception
+     */
+    @Test
+    public void testRemoveUserFromFriendList_thenMapsToService() throws Exception {
+        // tell the test what to expect when asked to perform certain tasks
+        when(userService.findById(1L)).thenReturn(userDTO());
+        when(userService.findById(2L)).thenReturn(secondUserDTO());
+        // performs those tasks
+        MvcResult mainUserResult = this.mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        MvcResult secondUserResult = this.mockMvc.perform(get("/users/2"))
+                .andExpect(status().isOk())
+                .andReturn();
+        // maps the returned values to their wanted types
+        UserDTO mainUser = objectMapper.readValue(mainUserResult.getResponse().getContentAsString(), UserDTO.class);
+        UserOnListDTO secondUser = objectMapper.readValue(secondUserResult.getResponse().getContentAsString(), UserOnListDTO.class);
+        mainUser.getFriendList().remove(secondUser);
+        // tell the test what to expect when asked to perform a certain task
+        when(userService.removeUserFromFriendList(anyLong(), anyLong())).thenReturn(responseSuccess());
+        // performs said task
+        this.mockMvc.perform(put("/users/remove/1/2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mainUser)))
+                .andExpect(status().isOk());
+
+        // now catch the arguments to test the fact that the service is called an appropriate number of times
+        // and that the data is properly handled
+        ArgumentCaptor<Long> mainUserID = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Long> secondUserID = ArgumentCaptor.forClass(Long.class);
+        verify(userService, times(1)).removeUserFromFriendList(mainUserID.capture() ,secondUserID.capture());
+        Assertions.assertEquals(userDTO().getId(), mainUserID.getValue());
+        Assertions.assertEquals(secondUserDTO().getId(), secondUserID.getValue());
     }
 }
