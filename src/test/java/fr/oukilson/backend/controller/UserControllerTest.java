@@ -201,9 +201,11 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(mainUser)))
                 .andExpect(status().isOk());
 
-        ArgumentCaptor<UserDTO> userDTOArgumentCaptor = ArgumentCaptor.forClass(UserDTO.class);
-        ArgumentCaptor<UserDTO> userDTOArgumentCaptor2 = ArgumentCaptor.forClass(UserDTO.class);
-        verify(userService, times(1)).addUserToFriendList(userDTOArgumentCaptor.capture().getId(), userDTOArgumentCaptor2.capture().getId());
-        Assertions.assertTrue(userDTOArgumentCaptor.getValue().getFriendList().contains(userDTOArgumentCaptor2.getValue()));
+        ArgumentCaptor<Long> userDTOArgumentCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Long> userDTOArgumentCaptor2 = ArgumentCaptor.forClass(Long.class);
+        verify(userService, times(1))
+                .addUserToFriendList(userDTOArgumentCaptor.capture(), userDTOArgumentCaptor2.capture());
+        Assertions.assertEquals(userDTO.getId(), (long) userDTOArgumentCaptor.getValue());
+        Assertions.assertEquals(userToAddDTO.getId(), (long) userDTOArgumentCaptor2.getValue());
     }
 }
