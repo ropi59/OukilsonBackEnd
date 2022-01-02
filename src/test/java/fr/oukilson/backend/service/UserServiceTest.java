@@ -53,17 +53,6 @@ public class UserServiceTest {
         return new User(2L, "password2", "hello2@email.com", "nickname2");
     }
 
-    public UserDTO userDTO() {
-        return new UserDTO(1L, "hello@example.com", "nickname");
-    }
-
-    public UserDTO otherUserDTO() {
-        return new UserDTO(2L, "hello2@email.com", "nickname2");
-    }
-    public ResponseDTO responseDTO(){
-        return new ResponseDTO(true, "success");
-    }
-
     public ResponseDTO responseDTOInvalid(){
         return new ResponseDTO(false, "failure");
     }
@@ -95,6 +84,10 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(any());
     }
 
+    /**
+     * testing the business logic of the addUserToFriendList method
+     * expecting success
+     */
     @Test
     public void testAddUserToFriendList(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -117,6 +110,10 @@ public class UserServiceTest {
         Assertions.assertTrue(mainUser.get().getFriendList().size() > 0);
     }
 
+    /**
+     * testing the business logic of the addUserToFriendList method
+     * expecting error
+     */
     @Test
     public void testAddUserToFriendList_mainUserEmpty(){
             ResponseDTO responseDTO = responseDTOInvalid();
@@ -139,6 +136,10 @@ public class UserServiceTest {
             Assertions.assertEquals(responseDTO.getMessage(), "empty return");
     }
 
+    /**
+     * testing the business logic of the addUserToFriendList method
+     * expecting error
+     */
     @Test
     public void testAddUserToFriendList_otherUserEmpty(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -161,6 +162,10 @@ public class UserServiceTest {
         Assertions.assertEquals(responseDTO.getMessage(), "empty return");
     }
 
+    /**
+     * testing the business logic of the addUserToFriendList method
+     * expecting error
+     */
     @Test
     public void testAddUserToFriendList_mainUserEqualsOtherUser(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -183,6 +188,10 @@ public class UserServiceTest {
         Assertions.assertEquals(responseDTO.getMessage(), "adding user to user");
     }
 
+    /**
+     * testing the business logic of the addUserToFriendList method
+     * expecting error
+     */
     @Test
     public void testAddUserToFriendList_otherUserAlreadyOnList(){
         ResponseDTO responseDTO = new ResponseDTO(false, "user already on list");
@@ -208,6 +217,10 @@ public class UserServiceTest {
     }
 
     // TESTING REMOVING A USER FROM ANOTHER USER'S LIST //
+    /**
+     * testing the business logic of the removeUserFromFriendList method
+     * expecting success
+     */
     @Test
     public void testRemoveUserFromFriendList(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -230,6 +243,10 @@ public class UserServiceTest {
         Assertions.assertEquals(0, mainUser.get().getFriendList().size());
     }
 
+    /**
+     * testing the business logic of the removeUserFromFriendList method
+     * expecting error
+     */
     @Test
     public void testRemoveUserFromFriendList_mainUserEmpty(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -250,6 +267,10 @@ public class UserServiceTest {
         Assertions.assertEquals(responseDTO.getMessage(), "User not found");
     }
 
+    /**
+     * testing the business logic of the removeUserFromFriendList method
+     * expecting error
+     */
     @Test
     public void testRemoveUserFromFriendList_otherUserEmpty(){
         ResponseDTO responseDTO = responseDTOInvalid();
@@ -270,6 +291,10 @@ public class UserServiceTest {
         Assertions.assertEquals(responseDTO.getMessage(), "User not found");
     }
 
+    /**
+     * testing the business logic of the removeUserFromFriendList method
+     * expecting error
+     */
     @Test
     public void testRemoveUserFromFriendList_otherUserNotOnList(){
         ResponseDTO responseDTO = new ResponseDTO(false, "user not on list");
@@ -293,6 +318,10 @@ public class UserServiceTest {
 
     // TESTING EMPTYING A USER'S FRIENDLIST //
 
+    /**
+     * testing the business logic of the remptyFriendList method
+     * expecting success
+     */
     @Test
     public void testEmptyFriendList(){
         when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
@@ -316,6 +345,10 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findById(1L);
     }
 
+    /**
+     * testing the business logic of the remptyFriendList method
+     * expecting error
+     */
     @Test
     public void testEmptyFriendList_userNotFound(){
         when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
