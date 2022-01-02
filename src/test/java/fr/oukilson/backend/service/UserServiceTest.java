@@ -15,6 +15,7 @@ import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -288,6 +289,52 @@ public class UserServiceTest {
         }
         Assertions.assertEquals(responseDTO.getMessage(), "user not on list");
     }
+
+
+    // TESTING EMPTYING A USER'S FRIENDLIST //
+
+    @Test
+    public void testEmptyFriendList(){
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
+        Optional<User> mainUser = this.userRepository.findById(1L);
+        ResponseDTO responseDTO = responseDTOInvalid();
+        mainUser.ifPresent(user -> user.getFriendList().add(otherUser()));
+        if(mainUser.isEmpty())
+            responseDTO.setMessage("user not found");
+        else {
+            Iterator<User> iterator = mainUser.get().getFriendList().iterator();
+            while(iterator.hasNext()){
+                iterator.next();
+                iterator.remove();
+            }
+            responseDTO.setMessage("success");
+            responseDTO.setSuccess(true);
+        }
+        Assertions.assertTrue(responseDTO.isSuccess());
+        Assertions.assertEquals(responseDTO.getMessage(), "success");
+        Assertions.assertEquals(0, mainUser.get().getFriendList().size());
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void testEmptyFriendList_userNotFound(){
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        Optional<User> mainUser = this.userRepository.findById(1L);
+        ResponseDTO responseDTO = responseDTOInvalid();
+        if(mainUser.isEmpty())
+            responseDTO.setMessage("user not found");
+        else {
+            Iterator<User> iterator = mainUser.get().getFriendList().iterator();
+            while(iterator.hasNext()){
+                iterator.next();
+                iterator.remove();
+            }
+            responseDTO.setMessage("success");
+            responseDTO.setSuccess(true);
+        }
+        Assertions.assertEquals(responseDTO.getMessage(), "user not found");
+    }
+
 
     /**
      * test email regex
