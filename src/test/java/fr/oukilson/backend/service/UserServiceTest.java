@@ -189,7 +189,8 @@ public class UserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
         Optional<User> mainUser = this.userRepository.findById(1L);
         Optional<User> otherUser = this.userRepository.findById(2L);
-        mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isPresent() && otherUser.isPresent())
+            mainUser.get().getFriendList().add(otherUser.get());
         if(mainUser.isEmpty() || otherUser.isEmpty()) {
             responseDTO.setMessage("empty return");
         }
@@ -213,19 +214,19 @@ public class UserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
         Optional<User> mainUser = this.userRepository.findById(1L);
         Optional<User> otherUser = this.userRepository.findById(2L);
-
-        if(mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("empty return");
-        else if(mainUser.equals(otherUser))
-            responseDTO.setMessage("adding user to user");
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isPresent() && otherUser.isPresent())
+            mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isEmpty() || otherUser.isEmpty())
+            responseDTO.setMessage("User not found");
+        else {
+            if (mainUser.get().getFriendList().contains(otherUser.get())) {
+                mainUser.get().getFriendList().remove(otherUser.get());
                 responseDTO.setSuccess(true);
+                responseDTO.setMessage("User was successfully removed from list");
             }
         }
         Assertions.assertTrue(responseDTO.isSuccess());
-        Assertions.assertTrue(mainUser.get().getFriendList().size() > 0);
+        Assertions.assertEquals(0, mainUser.get().getFriendList().size());
     }
 
     @Test
@@ -235,19 +236,17 @@ public class UserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
         Optional<User> mainUser = this.userRepository.findById(1L);
         Optional<User> otherUser = this.userRepository.findById(2L);
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
-        }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isEmpty() || otherUser.isEmpty())
+            responseDTO.setMessage("User not found");
+        else {
+            if (mainUser.get().getFriendList().contains(otherUser.get())) {
+                mainUser.get().getFriendList().remove(otherUser.get());
+                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
                 responseDTO.setSuccess(true);
+                responseDTO.setMessage("User was successfully removed from list");
             }
         }
-        Assertions.assertEquals(responseDTO.getMessage(), "empty return");
+        Assertions.assertEquals(responseDTO.getMessage(), "User not found");
     }
 
     @Test
@@ -257,64 +256,37 @@ public class UserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
         Optional<User> mainUser = this.userRepository.findById(1L);
         Optional<User> otherUser = this.userRepository.findById(2L);
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
-        }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isEmpty() || otherUser.isEmpty())
+            responseDTO.setMessage("User not found");
+        else {
+            if (mainUser.get().getFriendList().contains(otherUser.get())) {
+                mainUser.get().getFriendList().remove(otherUser.get());
+                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
                 responseDTO.setSuccess(true);
+                responseDTO.setMessage("User was successfully removed from list");
             }
         }
-        Assertions.assertEquals(responseDTO.getMessage(), "empty return");
+        Assertions.assertEquals(responseDTO.getMessage(), "User not found");
     }
 
     @Test
-    public void testRemoveUserFromFriendList_mainUserEqualsOtherUser(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(user()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
-        }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
-                responseDTO.setSuccess(true);
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "adding user to user");
-    }
-
-    @Test
-    public void testRemoveUserFromFriendList_otherUserAlreadyOnList(){
-        ResponseDTO responseDTO = new ResponseDTO(false, "user already on list");
+    public void testRemoveUserFromFriendList_otherUserNotOnList(){
+        ResponseDTO responseDTO = new ResponseDTO(false, "user not on list");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
         when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
         Optional<User> mainUser = this.userRepository.findById(1L);
         Optional<User> otherUser = this.userRepository.findById(2L);
-        mainUser.get().getFriendList().add(otherUser.get());
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
-        }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
+        if (mainUser.isEmpty() || otherUser.isEmpty())
+            responseDTO.setMessage("User not found");
+        else {
+            if (mainUser.get().getFriendList().contains(otherUser.get())) {
+                mainUser.get().getFriendList().remove(otherUser.get());
+                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
                 responseDTO.setSuccess(true);
+                responseDTO.setMessage("User was successfully removed from list");
             }
         }
-        Assertions.assertEquals(responseDTO.getMessage(), "user already on list");
+        Assertions.assertEquals(responseDTO.getMessage(), "user not on list");
     }
 
     /**
