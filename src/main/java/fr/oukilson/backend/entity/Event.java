@@ -26,9 +26,9 @@ public class Event {
     private Game game;		        	            // Game the event is about
 
     @Column(name = "min_player")
-    private Integer minPlayer;		                // Minimum number of players to run the event
+    private int minPlayer;		                    // Minimum number of players to run the event
     @Column(name = "max_player")
-    private Integer maxPlayer;		                // Maximum number of players to run the event
+    private int maxPlayer;		                    // Maximum number of players to run the event
     @Column(name = "creation_date")
     private Date creationDate;	                    // Event creation date
     @Column(name = "start_date")
@@ -58,13 +58,4 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> waitingUsers = new ArrayList<>();
-
-
-    public boolean addUserInRegisteredList(User user) {
-        return this.registeredUsers.add(user);
-    }
-
-    public boolean addUserInWaitingList(User user) {
-        return this.waitingUsers.add(user);
-    }
 }
