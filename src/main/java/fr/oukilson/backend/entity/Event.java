@@ -2,6 +2,7 @@ package fr.oukilson.backend.entity;
 
 import lombok.*;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -30,13 +31,13 @@ public class Event {
     @Column(name = "max_player")
     private int maxPlayer;		                    // Maximum number of players to run the event
     @Column(name = "creation_date")
-    private Date creationDate;	                    // Event creation date
+    private LocalDateTime creationDate;	                    // Event creation date
     @Column(name = "start_date")
-    private Date startingDate;	                    // Event starting date
+    private LocalDateTime startingDate;	                    // Event starting date
     @Column(name = "end_date")
-    private Date endingDate;	                    // Event ending date
+    private LocalDateTime endingDate;	                    // Event ending date
     @Column(name = "limit_date")
-    private Date limitDate;                         // End of inscription date
+    private LocalDateTime limitDate;                         // End of inscription date
     private String description;	                    // Description of the event
     @Column(name = "private")
     private Boolean isPrivate;	                    // True if the event is a private event
