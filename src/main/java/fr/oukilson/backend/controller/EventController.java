@@ -2,11 +2,9 @@ package fr.oukilson.backend.controller;
 
 import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.service.EventService;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -38,6 +36,7 @@ public class EventController {
      * Search for an event by one of this two options :
      * - date after the provided date
      * - happening in a town
+     * When both options are set, only search by date after whith the provided date.
      * @param toSearch EventSearchDTO
      * @return List<EventDTO>
      */
@@ -53,11 +52,14 @@ public class EventController {
      * @return The created event
      */
     @PostMapping
-    public ResponseEntity<EventCreateDTO> save(@RequestBody EventCreateDTO toCreate) {
-        ResponseEntity<EventCreateDTO> result;
+    public ResponseEntity<EventDTO> save(@RequestBody EventCreateDTO toCreate) {
+        ResponseEntity<EventDTO> result;
         try {
-            EventCreateDTO event = this.service.save(toCreate);
-            result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            EventDTO event = this.service.save(toCreate);
+            if (event!=null)
+                result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            else
+                result = ResponseEntity.badRequest().build();
         }
         catch(Exception e) {
             result = ResponseEntity.badRequest().build();
@@ -71,8 +73,19 @@ public class EventController {
      * @return The updated event
      */
     @PutMapping
-    public ResponseEntity<EventUpdateDTO> updateById(@RequestBody EventUpdateDTO toUpdate) {
-        return ResponseEntity.ok(this.service.update(toUpdate));
+    public ResponseEntity<EventDTO> updateById(@RequestBody EventUpdateDTO toUpdate) {
+        ResponseEntity<EventDTO> result;
+        try {
+            EventDTO event = this.service.update(toUpdate);
+            if (event!=null)
+                result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            else
+                result = ResponseEntity.badRequest().build();
+        }
+        catch(Exception e) {
+            result = ResponseEntity.badRequest().build();
+        }
+        return result;
     }
 
     /**
