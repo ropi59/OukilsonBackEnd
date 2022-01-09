@@ -22,8 +22,6 @@ public class User {
     private String firstName;           // First name of the user
     @Column(name = "last_name")
     private String lastName;            // Last name of the user
-    @Lob
-    private byte[] icon;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "friend_list",
