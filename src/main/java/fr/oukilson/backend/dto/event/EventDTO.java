@@ -1,9 +1,11 @@
 package fr.oukilson.backend.dto.event;
 
 import fr.oukilson.backend.dto.game.GameUuidDTO;
+import fr.oukilson.backend.dto.location.LocationDTO;
 import fr.oukilson.backend.dto.user.UserNameDTO;
 import fr.oukilson.backend.entity.Location;
 import lombok.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -16,13 +18,13 @@ public class EventDTO {
     private GameUuidDTO game;
     private int minPlayer;
     private int maxPlayer;
-    private Date creationDate;
-    private Date startingDate;
-    private Date endingDate;
-    private Date limitDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime startingDate;
+    private LocalDateTime endingDate;
+    private LocalDateTime limitDate;
     private String description;
     private Boolean isPrivate;
-    private Location location;
+    private LocationDTO location;
     // Users registered in the event
     private List<UserNameDTO> registeredUsers = new ArrayList<>();
     // Users in the waiting queue

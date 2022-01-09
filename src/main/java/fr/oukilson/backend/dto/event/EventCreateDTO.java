@@ -1,12 +1,12 @@
 package fr.oukilson.backend.dto.event;
 
 import fr.oukilson.backend.dto.game.GameUuidDTO;
+import fr.oukilson.backend.dto.location.EventCreateLocationDTO;
 import fr.oukilson.backend.dto.user.UserNameDTO;
-import fr.oukilson.backend.entity.Location;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,10 +17,10 @@ public class EventCreateDTO {
     private GameUuidDTO game;
     private int minPlayer;
     private int maxPlayer;
-    private Date limitDate;
-    private Date startingDate;
-    private Date endingDate;
+    private LocalDateTime limitDate;
+    private LocalDateTime startingDate;
+    private LocalDateTime endingDate;
     private String description;
     private Boolean isPrivate;
-    private Location location;
+    private EventCreateLocationDTO location;
 }
