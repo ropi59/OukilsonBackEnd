@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class UserProfilDTO {
 
     private String nickname;
+    private String iconFilename;
 
 }
