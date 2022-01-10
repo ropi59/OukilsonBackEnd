@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 
 public class Tools {
 
-
     //TODO ne pas renvoyer d'exceptions, renvoyer un "prédicat" -> vrai ou faux
 
     /**
