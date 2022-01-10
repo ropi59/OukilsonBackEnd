@@ -109,14 +109,14 @@ public class EventService {
         Event event = this.repository.findByUuid(toUpdate.getUuid()).orElse(null);
         if (event==null)
             throw new NoSuchElementException("Event update : Unknown event");
-        String oldGameUuid = event.getGame().getUuid();
-        Location oldLocation = event.getLocation();
 
         // Check data
         if (!toUpdate.isValid(event.getCreationDate()))
             throw new IllegalArgumentException("Event update : Invalid parameter data.");
 
         // Update attribute
+        String oldGameUuid = event.getGame().getUuid();
+        Location oldLocation = event.getLocation();
         this.mapper.map(toUpdate, event);
 
         // If the event's game has been modified, updated it
