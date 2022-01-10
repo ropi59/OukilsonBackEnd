@@ -12,6 +12,8 @@ import fr.oukilson.backend.repository.GameRepository;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 public class EventService {
@@ -56,10 +58,11 @@ public class EventService {
      * @param toCreate The event to add
      * @return The created event
      */
-    public EventCreateDTO save(EventCreateDTO toCreate)
+    public EventDTO save(EventCreateDTO toCreate)
             throws NoSuchElementException, IllegalArgumentException {
         // Check data
-        if (isCreateEventDTOValid(toCreate)==false)
+        LocalDateTime rightNow = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        if (!toCreate.isValid(rightNow))
             throw new IllegalArgumentException("Event creation : Invalid parameter data.");
 
         // Get the user creator and the game
@@ -74,51 +77,10 @@ public class EventService {
         catch (Exception e) {
             throw new NoSuchElementException("Event creation : Unknown user/game");
         }
-        event.setCreationDate(new Date());
+        event.setCreationDate(rightNow);
 
         // Save and return
-        event = this.repository.save(event);
-        return this.mapper.map(event, EventCreateDTO.class);
-    }
-
-    /**
-     * Check constraints on creation DTO :
-     * 1 - Minimum number of players >= 2
-     * 2 - Maximal number of players >= Minimum number of players
-     * 3 - Limit inscription date must be after starting event date and ending event date (if any)
-     * 4 - If there's an ending event date, then it'll come after the starting event date
-     * @param event EventCreateDTO to create
-     * @return True id EventCreateDTO parameter is valid
-     */
-    private boolean isCreateEventDTOValid(EventCreateDTO event) {
-        if (event.getMinPlayer()>=2
-                && event.getMaxPlayer()>=event.getMinPlayer()
-                && event.getLimitDate().before(event.getStartingDate())
-                && (event.getEndingDate()==null || event.getStartingDate().before(event.getEndingDate()))
-        )
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check constraints on update DTO :
-     * 1 - Minimum number of players >= 2
-     * 2 - Maximal number of players >= Minimum number of players
-     * 3 - Limit inscription date must be after starting event date and ending event date (if any)
-     * 4 - If there's an ending event date, then it'll come after the starting event date
-     * @param event EventCreateDTO to create
-     * @return True id EventCreateDTO parameter is valid
-     */
-    private boolean isUpdateEventDTOValid(EventUpdateDTO event) {
-        if (event.getMinPlayer()>=2
-                &&event.getMaxPlayer()>=event.getMinPlayer()
-                && event.getLimitDate().before(event.getStartingDate())
-                && (event.getEndingDate()==null || event.getStartingDate().before(event.getEndingDate()))
-        )
-            return true;
-        else
-            return false;
+        return this.mapper.map(this.repository.save(event), EventDTO.class);
     }
 
     /**
@@ -126,33 +88,43 @@ public class EventService {
      * @param toUpdate The event to update
      * @return The updated event
      */
-    public EventUpdateDTO update(EventUpdateDTO toUpdate)
+    public EventDTO update(EventUpdateDTO toUpdate)
             throws NoSuchElementException, IllegalArgumentException {
-        // Check data
-        if (isUpdateEventDTOValid(toUpdate)==false)
-            throw new IllegalArgumentException("Event creation : Invalid parameter data.");
-
-        // Find event
+        // Find the event to update
         Event event = this.repository.findByUuid(toUpdate.getUuid()).orElse(null);
         if (event==null)
-            throw new NoSuchElementException("Event creation : Unknown event");
+            throw new NoSuchElementException("Event update : Unknown event");
         String oldGameUuid = event.getGame().getUuid();
+
+        // Check data
+        if (!toUpdate.isValid(event.getCreationDate()))
+            throw new IllegalArgumentException("Event update : Invalid parameter data.");
+
+        // Update attribute
         this.mapper.map(toUpdate, event);
 
-        // Replace game if needed
+        // If the event's game has been modified, updated it
         if (!oldGameUuid.equals(toUpdate.getGame().getUuid())) {
             try {
                 Optional<Game> game = this.gameRepository.findByUuid(toUpdate.getGame().getUuid());
                 event.setGame(game.get());
             } catch (Exception e) {
-                throw new NoSuchElementException("Event creation : Unknown game");
+                throw new NoSuchElementException("Event update : Unknown game");
             }
         }
 
         // Save and return
-        return this.mapper.map(this.repository.save(event), EventUpdateDTO.class);
+        return this.mapper.map(this.repository.save(event), EventDTO.class);
     }
 
+    /**
+     * Search for events by one of this two options :
+     * - date after the provided date
+     * - happening in a town
+     * If both filters are used, the date will be default choice
+     * @param toSearch EventSearchDTO
+     * @return List<EventDTO>
+     */
     public List<EventDTO> findByFilter(EventSearchDTO toSearch) {
         // Get events
         List<Event> events;
