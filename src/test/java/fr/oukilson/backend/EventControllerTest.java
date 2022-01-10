@@ -20,10 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,11 +90,11 @@ public class EventControllerTest {
         event.setDescription("Une description plus que valide. YEAAAAAHHHHHHHHHHHHHH !!!!!!!!!!!!");
         event.setLocation(location);
         event.setGame(game);
-        LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        LocalDateTime localDateTime = LocalDateTime.now();
         event.setCreationDate(localDateTime);
         event.setLimitDate(localDateTime.plusDays(1L));
         event.setStartingDate(localDateTime.plusDays(2L));
-        event.setEndingDate(localDateTime.plusHours(5L));
+        event.setEndingDate(event.getStartingDate().plusHours(5L));
         event.setCreator(user);
         return event;
     }
@@ -106,18 +104,12 @@ public class EventControllerTest {
      * @return Gson
      */
     private Gson getInitializedGSON() {
-        return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
-                    @Override
-                    public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-                            throws JsonParseException {
-                        return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString());
-                    }
-                }).registerTypeAdapter(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {
-                    @Override
-                    public JsonElement serialize(LocalDateTime date, Type type, JsonSerializationContext context) {
-                        return new JsonPrimitive(date.toString());
-                    }
-                })
+        return new GsonBuilder().registerTypeAdapter(LocalDateTime.class,
+                        (JsonDeserializer<LocalDateTime>) (json, type, context)
+                                -> LocalDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+                .registerTypeAdapter(LocalDateTime.class,
+                        (JsonSerializer<LocalDateTime>) (date, type, context)
+                                -> new JsonPrimitive(date.toString()))
                 .create();
     }
 
@@ -187,7 +179,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenStartingDateIsNull() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        LocalDateTime date = LocalDateTime.now();
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "tata");
         Game game = this.createValidFullGame(1L, "The game");
@@ -228,7 +220,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenTownIsNull() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        LocalDateTime date = LocalDateTime.now();
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
@@ -269,7 +261,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFilters() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        LocalDateTime date = LocalDateTime.now();
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
