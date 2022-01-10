@@ -33,10 +33,10 @@ public class EventController {
     }
 
     /**
-     * Search for an event by one of this two options :
+     * Search for events by one of this two options :
      * - date after the provided date
      * - happening in a town
-     * When both options are set, only search by date after whith the provided date.
+     * When both options are set, only search by "date after" with the provided date.
      * @param toSearch EventSearchDTO
      * @return List<EventDTO>
      */
