@@ -3,6 +3,7 @@ package fr.oukilson.backend;
 import fr.oukilson.backend.dto.event.EventCreateDTO;
 import fr.oukilson.backend.dto.event.EventDTO;
 import fr.oukilson.backend.dto.event.EventSearchDTO;
+import fr.oukilson.backend.dto.event.EventUpdateDTO;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.entity.Location;
@@ -393,7 +394,7 @@ public class EventServiceTest {
     /**
      * Testing if creating an event with minimal players less than 2 throws IllegalArgumentException
      */
-    @DisplayName("Test : event with minimal player less than 2 throws IllegalArgumentException")
+    @DisplayName("Test : event with minimal players count less than 2 throws IllegalArgumentException")
     @Test
     public void testSaveWhenMinPlayerLessThan2() {
         // Mock event
@@ -416,9 +417,9 @@ public class EventServiceTest {
     }
 
     /**
-     * Testing correct event creation with minimal player set to 2
+     * Testing correct event creation with minimal players count set to 2
      */
-    @DisplayName("Test : create a valid event with minimal player set to 2")
+    @DisplayName("Test : create a valid event with minimal players count set to 2")
     @Test
     public void testSaveWhenMinPlayerEquals2() {
         // Mock event
@@ -450,7 +451,7 @@ public class EventServiceTest {
     }
 
     /**
-     * Testing correct event creation with minimal player is equals to maximal player
+     * Testing correct event creation with minimal players count is equals to maximal players count
      */
     @DisplayName("Test : create a valid event with min player == max player")
     @Test
@@ -485,9 +486,9 @@ public class EventServiceTest {
     }
 
     /**
-     * Testing if creating an event with minimal players less than maximal players throws IllegalArgumentException
+     * Testing if creating an event with minimal players less than maximal players count throws IllegalArgumentException
      */
-    @DisplayName("Test : event with mini player > max player throws IllegalArgumentException")
+    @DisplayName("Test : event with min players > max players throws IllegalArgumentException")
     @Test
     public void testSaveWhenMaxPlayerLessThanMinPlayer() {
         // Mock event
@@ -534,6 +535,11 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation with an invalid inscription date
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with invalid limit inscription date throws IllegalArgumentException")
     @Test
     public void testSaveWhenLimitDateIsBeforeCreationDate() {
         // Mock event
@@ -554,7 +560,11 @@ public class EventServiceTest {
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
-
+    /**
+     * Testing event creation with an invalid starting date
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with invalid starting date throws IllegalArgumentException")
     @Test
     public void testSaveWhenStartingDateIsBeforeLimitDate() {
         // Mock event
@@ -576,6 +586,11 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation with an invalid ending date
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with invalid ending date throws IllegalArgumentException")
     @Test
     public void testSaveWhenEndingDateIsBeforeStartingDate() {
         // Mock event
@@ -597,6 +612,11 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation when creator attribute is null
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with null creator attribute IllegalArgumentException")
     @Test
     public void testSaveWhenCreatorIsNull() {
         // Mock event
@@ -618,11 +638,34 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Test event creation with a username not in database
+     */
+    @DisplayName("Test : can't find creator user in database")
     @Test
     public void testSaveWhenCreatorIsNotInDatabase() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // Assert
+        EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
+        Assertions.assertThrows(NoSuchElementException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation when game attribute is null
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with null game attribute IllegalArgumentException")
     @Test
     public void testSaveWhenGameIsNull() {
         // Mock event
@@ -644,11 +687,34 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing creation event with a game not in database
+     */
+    @DisplayName("Test : game for event not in database")
     @Test
     public void testSaveWhenGameIsNotInDatabase() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // Assert
+        EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
+        Assertions.assertThrows(NoSuchElementException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation when location attribute is null
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with null location attribute IllegalArgumentException")
     @Test
     public void testSaveWhenLocationIsNull() {
         // Mock event
@@ -670,6 +736,11 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Testing event creation when location.town attribute is null
+     * Must throw IllegalArgumentException
+     */
+    @DisplayName("Test : event with null town attribute IllegalArgumentException")
     @Test
     public void testSaveWhenLocationTownIsNull() {
         // Mock event
@@ -691,56 +762,301 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
+    /**
+     * Test event creation with a location which doesn't exist in database
+     */
+    @DisplayName("Test : event creation with a new location")
     @Test
     public void testSaveWhenLocationIsNotInDatabase() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+
+        // Save
+        EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
+
+        // Assert
+        EventDTO result = null;
+        try {
+            result = this.service.save(toCreate);
+        }
+        finally {
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(this.mapper.map(event, EventDTO.class), result);
+        }
     }
 
     // method update
 
+    /**
+     * Update event testing
+     */
+    @DisplayName("Test : update event with a new title")
     @Test
     public void testUpdateWhenAllDataAreValidAndPrivateIsFalse() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setTitle("A brand new title , Weather Hacker !!!");
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        EventDTO result = null;
+        result = this.service.update(toUpdate);
+        try {
+            result = this.service.update(toUpdate);
+        }
+        finally {
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(this.mapper.map(newEvent, EventDTO.class), result);
+        }
     }
 
-    @Test
-    public void testUpdateWhenAllDataAreValidAndPrivateIsTrue() {
-        Assertions.fail();
-    }
-
+    /**
+     * Update event testing when ending date is null
+     */
+    @DisplayName("Test : update event with a new title and no ending date")
     @Test
     public void testUpdateWhenAllDataAreValidAndEndingDateIsNull() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        event.setEndingDate(null);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setTitle("A brand new title , Weather Hacker !!!");
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        EventDTO result = null;
+        result = this.service.update(toUpdate);
+        try {
+            result = this.service.update(toUpdate);
+        }
+        finally {
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(this.mapper.map(newEvent, EventDTO.class), result);
+        }
     }
 
+    /**
+     * Event update test : check if invalid title throws IllegalArgumentException
+     */
+    @DisplayName("Test : update with null title throws IllegalArgumentException")
     @Test
     public void testUpdateWhenEventTitleIsNull() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setTitle(null);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : minimal players count less than 2 must throws IllegalArgumentException
+     */
+    @DisplayName("Test : update minimal players count less than 2 must throws IllegalArgumentException")
     @Test
     public void testUpdateWhenMinPlayerLessThan2() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setMinPlayer(1);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : minimal players count equals 2 is ok
+     */
+    @DisplayName("Test : update with minimal players count equals 2 is ok")
     @Test
     public void testUpdateWhenMinPlayerEquals2() {
-        Assertions.fail();
-    }
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        event.setEndingDate(null);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
 
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setMinPlayer(2);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        EventDTO result = null;
+        result = this.service.update(toUpdate);
+        try {
+            result = this.service.update(toUpdate);
+        }
+        finally {
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(this.mapper.map(newEvent, EventDTO.class), result);
+        }
+    }
+    /**
+     * Update test : minimal players count equals maximal players count is ok
+     */
+    @DisplayName("Test : update minimal players count equals maximal players count is ok")
     @Test
     public void testUpdateWhenMinPlayerEqualsMaxPlayer() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        event.setEndingDate(null);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setMinPlayer(newEvent.getMaxPlayer());
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        EventDTO result = null;
+        result = this.service.update(toUpdate);
+        try {
+            result = this.service.update(toUpdate);
+        }
+        finally {
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(this.mapper.map(newEvent, EventDTO.class), result);
+        }
     }
 
+    /**
+     * Update test : minimal players count higher than maximal players count, throws IllegalArgumentException
+     */
+    @DisplayName("Test : update throws IllegalArgumentException if minimal players count higher > maximal players count")
     @Test
     public void testUpdateWhenMaxPlayerLessThanMinPlayer() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setMaxPlayer(newEvent.getMinPlayer()-1);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : description is null, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if description is null on update")
     @Test
     public void testUpdateWhenDescriptionIsNull() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setDescription(null);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
     @Test
@@ -758,38 +1074,105 @@ public class EventServiceTest {
         Assertions.fail();
     }
 
-    @Test
-    public void testUpdateWhenCreatorIsNull() {
-        Assertions.fail();
-    }
-
-    @Test
-    public void testUpdateWhenCreatorIsNotInDatabase() {
-        Assertions.fail();
-    }
-
+    /**
+     * Update test : game is null, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if game is null on update")
     @Test
     public void testUpdateWhenGameIsNull() {
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setGame(null);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
+    }
+
+    @Test
+    public void testUpdateWhenNewGameIsNotInDatabase() {
         Assertions.fail();
     }
 
     @Test
-    public void testUpdateWhenGameIsNotInDatabase() {
+    public void testUpdateWhenNewGameIsInDatabase() {
         Assertions.fail();
     }
 
+    /**
+     * Update test : location is null, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if location is null on update")
     @Test
     public void testUpdateWhenLocationIsNull() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setLocation(null);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : town name is null, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if town's name is null on update")
     @Test
     public void testUpdateWhenLocationTownIsNull() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.getLocation().setTown(null);
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
     @Test
-    public void testUpdateWhenLocationIsNotInDatabase() {
+    public void testUpdateWhenNewLocationIsNotInDatabase() {
         Assertions.fail();
     }
 
