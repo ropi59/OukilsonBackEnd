@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String password;
@@ -21,6 +22,7 @@ public class User {
     private String lastName;
     private String email; //TODO test unicité du mail
     private String nickname; //TODO test unicité du nickname
-    @Lob
-    private byte[] icon;
+    @Column(name="icon_filename")
+    private String iconFilename;
+
 }
