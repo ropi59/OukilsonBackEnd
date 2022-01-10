@@ -1059,19 +1059,90 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : if the limit inscription date is before the creation date, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if the limit inscription date before the creation date on update")
     @Test
     public void testUpdateWhenLimitDateIsBeforeCreationDate() {
-        Assertions.fail();
-    }
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
 
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setLimitDate(event.getCreationDate().minusDays(1));
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
+    }
+    /**
+     * Update test : if the starting date is before the limit inscription date, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if the starting date before the limit inscription date on update")
     @Test
     public void testUpdateWhenStartingDateIsBeforeLimitDate() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setStartingDate(newEvent.getLimitDate().minusMonths(1));
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
+    /**
+     * Update test : if the ending date is before the starting date, throws IllegalArgumentException
+     */
+    @DisplayName("Test : IllegalArgumentException if the ending date before the starting date on update")
     @Test
     public void testUpdateWhenEndingDateIsBeforeStartingDate() {
-        Assertions.fail();
+        // Mock event
+        Game game = this.createValidFullGame(10L, "Innovation");
+        User user = this.createValidFullUser(10L, "SuperAlbert");
+        Location location = new Location(10L, "Gan", "64290", "123 Rue d'Ossau");
+        Event event = this.createValidEvent(10L, game, user, location);
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
+        BDDMockito
+                .when(this.locationRepository
+                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
+                .thenReturn(Optional.of(location));
+
+        // The new event
+        Event newEvent = this.mapper.map(event, Event.class);
+        newEvent.setEndingDate(newEvent.getStartingDate().minusDays(1));
+        EventUpdateDTO toUpdate = this.mapper.map(newEvent, EventUpdateDTO.class);
+        BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(newEvent);
+
+        // Assert
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
     /**
