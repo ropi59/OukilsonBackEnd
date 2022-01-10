@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UploadFileResponse {
 
-    private String fileName;
-    private String IconUri;
-    private String IconType;
-    private Long IconSize;
+    private String filename;
+    private String Icon_uri;
 }
