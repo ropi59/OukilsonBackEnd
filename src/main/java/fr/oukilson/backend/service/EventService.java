@@ -4,28 +4,34 @@ import fr.oukilson.backend.dto.event.EventCreateDTO;
 import fr.oukilson.backend.dto.event.EventDTO;
 import fr.oukilson.backend.dto.event.EventSearchDTO;
 import fr.oukilson.backend.dto.event.EventUpdateDTO;
+import fr.oukilson.backend.dto.location.EventCreateLocationDTO;
+import fr.oukilson.backend.dto.location.EventUpdateLocationDTO;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
+import fr.oukilson.backend.entity.Location;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.EventRepository;
 import fr.oukilson.backend.repository.GameRepository;
+import fr.oukilson.backend.repository.LocationRepository;
 import fr.oukilson.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 public class EventService {
     private EventRepository repository;
     private UserRepository userRepository;
     private GameRepository gameRepository;
+    private LocationRepository locationRepository;
     private ModelMapper mapper;
 
-    public EventService(EventRepository repository, UserRepository userRepository, GameRepository gameRepository, ModelMapper mapper) {
+    public EventService(EventRepository repository, UserRepository userRepository, GameRepository gameRepository,
+                        LocationRepository locationRepository, ModelMapper mapper) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
+        this.locationRepository = locationRepository;
         this.mapper = mapper;
     }
 
@@ -61,12 +67,13 @@ public class EventService {
     public EventDTO save(EventCreateDTO toCreate)
             throws NoSuchElementException, IllegalArgumentException {
         // Check data
-        LocalDateTime rightNow = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("ECT")));
+        LocalDateTime rightNow = LocalDateTime.now();
         if (!toCreate.isValid(rightNow))
             throw new IllegalArgumentException("Event creation : Invalid parameter data.");
 
         // Get the user creator and the game
         Event event = this.mapper.map(toCreate, Event.class);
+        event.setCreationDate(rightNow);
         event.setUuid(UUID.randomUUID().toString());
         try {
             Optional<User> user = this.userRepository.findByNickname(toCreate.getCreator().getNickname());
@@ -77,7 +84,15 @@ public class EventService {
         catch (Exception e) {
             throw new NoSuchElementException("Event creation : Unknown user/game");
         }
-        event.setCreationDate(rightNow);
+
+        // Find if the location is already in database
+        EventCreateLocationDTO locationDTO = toCreate.getLocation();
+        Optional<Location> location = this.locationRepository
+                .findByTownAndZipCodeAndAddress(
+                        locationDTO.getTown(),
+                        locationDTO.getZipCode(),
+                        locationDTO.getAddress());
+        location.ifPresent(event::setLocation);
 
         // Save and return
         return this.mapper.map(this.repository.save(event), EventDTO.class);
@@ -95,6 +110,7 @@ public class EventService {
         if (event==null)
             throw new NoSuchElementException("Event update : Unknown event");
         String oldGameUuid = event.getGame().getUuid();
+        Location oldLocation = event.getLocation();
 
         // Check data
         if (!toUpdate.isValid(event.getCreationDate()))
@@ -111,6 +127,19 @@ public class EventService {
             } catch (Exception e) {
                 throw new NoSuchElementException("Event update : Unknown game");
             }
+        }
+
+        // If the location has been modified, updated it
+        EventUpdateLocationDTO newLocation = toUpdate.getLocation();
+        if (!oldLocation.getTown().equals(newLocation.getTown())
+                || !oldLocation.getZipCode().equals(newLocation.getZipCode())
+                || !oldLocation.getAddress().equals(newLocation.getAddress())) {
+            Optional<Location> location = this.locationRepository
+                    .findByTownAndZipCodeAndAddress(
+                            newLocation.getTown(),
+                            newLocation.getZipCode(),
+                            newLocation.getAddress());
+            location.ifPresent(event::setLocation);
         }
 
         // Save and return
