@@ -26,11 +26,6 @@ import java.util.Optional;
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
 
-    /**
-     * init blob
-     */
-    private byte[] icon = "My Blob".getBytes();
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -44,27 +39,28 @@ public class UserControllerTest {
      */
     private UserProfilDTO userDTO() throws SQLException {
         return new UserProfilDTO(
-                "johnny"
+                "johnny",
+                "avatar.jpeg"
     );
     }
 
     private UserEditDTO userEditDTO() throws SQLException {
         return new UserEditDTO(
-                "azerty",
                 "john",
                 "doe",
                 "johndoe@mail.com",
-                "johnny"
+                "johnny",
+                "avatar.jpeg"
         );
     }
 
     private UserEditDTO userEditDTOUpdated() throws SQLException {
         return new UserEditDTO(
-                "qsdfgh",
                 "frank",
                 "unamed",
                 "frankunamed@mail.com",
-                "johnny"
+                "johnny",
+                "avatar.jpeg"
         );
     }
     /**
