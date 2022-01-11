@@ -51,14 +51,14 @@ public class Event {
     @JoinTable(name = "event_user",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private LinkedList<User> registeredUsers = new LinkedList<>();
+    private List<User> registeredUsers = new LinkedList<>();
 
     // Users in the waiting queue
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "event_user_in_queue",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private LinkedList<User> waitingUsers = new LinkedList<>();
+    private List<User> waitingUsers = new LinkedList<>();
 
 
     /**
@@ -68,7 +68,7 @@ public class Event {
      * @param user The user to check
      * @return True if user in list
      */
-    private boolean isUserInList(LinkedList<User> list, User user) {
+    private boolean isUserInList(List<User> list, User user) {
         boolean result = false;
         Iterator it = list.iterator();
         while (it.hasNext()) {
@@ -87,7 +87,7 @@ public class Event {
      * @return True if added
      */
     public boolean addUser(User user) {
-        return this.addUserInLinkedList(this.registeredUsers, user);
+        return this.addUserInList(this.registeredUsers, user);
     }
 
     /**
@@ -96,7 +96,7 @@ public class Event {
      * @return True if added
      */
     public boolean addUserInWaitingQueue(User user) {
-        return this.addUserInLinkedList(this.waitingUsers, user);
+        return this.addUserInList(this.waitingUsers, user);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Event {
      * @param user User
      * @return True if added
      */
-    private boolean addUserInLinkedList(LinkedList<User> list, User user) {
+    private boolean addUserInList(List<User> list, User user) {
         boolean result;
         if (list.size()==this.maxPlayer || this.isUserInList(list, user))
             result = false;
