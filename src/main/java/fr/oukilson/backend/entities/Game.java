@@ -17,12 +17,12 @@ public class Game {
     private Long id;
     private String uuid;
     private String name;
-    private int minPlayer;
-    private int maxPlayer;
+    private Integer minPlayer;
+    private Integer maxPlayer;
     // Duration in minutes
-    private int minTime;
-    private int maxTime;
-    private int minAge;
+    private Integer minTime;
+    private Integer maxTime;
+    private Integer minAge;
     private String creatorName;
 
 }

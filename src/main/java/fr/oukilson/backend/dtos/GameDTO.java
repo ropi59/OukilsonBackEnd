@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 public class GameDTO {
     private String uuid;
     private String name;
-    private int minPlayer;
-    private int maxPlayer;
-    private int minTime;
-    private int maxTime;
-    private int minAge;
+    private Integer minPlayer;
+    private Integer maxPlayer;
+    private Integer minTime;
+    private Integer maxTime;
+    private Integer minAge;
     private String creatorName;
 }
