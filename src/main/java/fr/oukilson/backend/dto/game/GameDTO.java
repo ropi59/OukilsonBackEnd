@@ -2,7 +2,6 @@ package fr.oukilson.backend.dto.game;
 
 import lombok.*;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +12,6 @@ public class GameDTO {
     private int maxPlayer;
     private int minPlayingTime;
     private int maxPlayingTime;
-    private int age;
+    private int minAge;
     private String creatorName;
 }
