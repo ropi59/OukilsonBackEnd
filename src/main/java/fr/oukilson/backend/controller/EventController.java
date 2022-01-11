@@ -98,4 +98,48 @@ public class EventController {
         this.service.deleteByUuid(toDelete.getUuid());
         return ResponseEntity.ok(true);
     }
+
+    /**
+     * Route to add a user (with his nickname) in an event (with its uuid)
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    @PostMapping("/add_user")
+    public ResponseEntity<Boolean> addUserInEvent(@RequestBody EventAddUserDTO tuple) {
+        boolean result = this.service.addUserInEvent(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to add a user (with his nickname) in the waiting list of an event (with its uuid)
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    @PostMapping("/add_user/waiting")
+    public ResponseEntity<Boolean> addUserInEventInWaitingQueue(@RequestBody EventAddUserDTO tuple) {
+        boolean result = this.service.addUserInEventInWaitingQueue(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to remove a user (with his nickname) in an event (with its uuid)
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    @PostMapping("/remove_user")
+    public ResponseEntity<Boolean> removeUserInEvent(@RequestBody EventRemoveUserDTO tuple) {
+        boolean result = this.service.removeUserInEvent(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to remove a user (with his nickname) in the waiting list of an event (with its uuid)
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    @PostMapping("/remove_user/waiting")
+    public ResponseEntity<Boolean> removeUserInWaitingQueue(@RequestBody EventRemoveUserDTO tuple) {
+        boolean result = this.service.removeUserInWaitingQueue(tuple);
+        return ResponseEntity.ok(result);
+    }
 }
