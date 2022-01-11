@@ -37,12 +37,13 @@ public class EventUpdateDTO {
      * @param date A LocalDateTime to check the validity of date type attributes
      * @return True if valid
      */
+    // TODO test event (service, controller) when uuid==null
     public boolean isValid(LocalDateTime date) {
         boolean result;
-        if (this.minPlayer<2 || this.minPlayer>this.maxPlayer || this.title== null || this.description==null
-                || this.game==null || this.game.getUuid()==null || this.location==null || this.location.getTown()==null
-                || this.limitDate==null || this.limitDate.isBefore(date) || this.startingDate==null
-                || this.startingDate.isBefore(this.limitDate)
+        if (this.uuid==null || this.minPlayer<2 || this.minPlayer>this.maxPlayer || this.title== null
+                || this.description==null || this.game==null || this.game.getUuid()==null || this.location==null
+                || this.location.getTown()==null || this.limitDate==null || this.limitDate.isBefore(date)
+                || this.startingDate==null || this.startingDate.isBefore(this.limitDate)
                 || (this.endingDate!=null && this.endingDate.isBefore(this.startingDate)))
             result = false;
         else
