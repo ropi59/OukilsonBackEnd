@@ -1,11 +1,6 @@
 package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dto.event.EventCreateDTO;
-import fr.oukilson.backend.dto.event.EventDTO;
-import fr.oukilson.backend.dto.event.EventSearchDTO;
-import fr.oukilson.backend.dto.event.EventUpdateDTO;
-import fr.oukilson.backend.dto.location.EventCreateLocationDTO;
-import fr.oukilson.backend.dto.location.EventUpdateLocationDTO;
+import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.entity.Location;
@@ -145,6 +140,136 @@ public class EventService {
         // Construct result
         List<EventDTO> result = new ArrayList<>();
         events.forEach(e -> result.add(this.mapper.map(e, EventDTO.class)));
+        return result;
+    }
+
+    /**
+     * Add a user in the event's queue.
+     * Will return false if :
+     * - user doesn't exist
+     * - event doesn't exist
+     * - user is already in the queue
+     * - the event's queue is full
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    public boolean addUserInEvent(EventAddUserDTO tuple) {
+        boolean result;
+
+        // Check data
+        if (tuple==null || tuple.getUuid()==null || tuple.getNickname()==null)
+            result = false;
+        else {
+            // Find user and event
+            Event event = this.repository.findByUuid(tuple.getUuid()).orElse(null);
+            if (event==null)
+                result = false;
+            else {
+                User user = this.userRepository.findByNickname(tuple.getNickname()).orElse(null);
+                if (user==null)
+                    result = false;
+                else {
+                    result = event.addUser(user);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Add a user in the event's waiting queue.
+     * Will return false if :
+     * - user doesn't exist
+     * - event doesn't exist
+     * - user is already in the waiting queue
+     * - the event's waiting queue is full
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    public boolean addUserInEventInWaitingQueue(EventAddUserDTO tuple) {
+        boolean result;
+
+        // Check data
+        if (tuple==null || tuple.getUuid()==null || tuple.getNickname()==null)
+            result = false;
+        else {
+            // Find user and event
+            Event event = this.repository.findByUuid(tuple.getUuid()).orElse(null);
+            if (event==null)
+                result = false;
+            else {
+                User user = this.userRepository.findByNickname(tuple.getNickname()).orElse(null);
+                if (user==null)
+                    result = false;
+                else {
+                    result = event.addUserInWaitingQueue(user);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Remove a user in an event's queue
+     * Will return false if :
+     * - user doesn't exist
+     * - event doesn't exist
+     * - user is not in the queue
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    public boolean removeUserInEvent(EventRemoveUserDTO tuple) {
+        boolean result;
+
+        // Check data
+        if (tuple==null || tuple.getUuid()==null || tuple.getNickname()==null)
+            result = false;
+        else {
+            // Find user and event
+            Event event = this.repository.findByUuid(tuple.getUuid()).orElse(null);
+            if (event==null)
+                result = false;
+            else {
+                User user = this.userRepository.findByNickname(tuple.getNickname()).orElse(null);
+                if (user==null)
+                    result = false;
+                else {
+                    result = event.removeUser(user);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Remove a user in an event's waiting queue
+     * Will return false if :
+     * - user doesn't exist
+     * - event doesn't exist
+     * - user is not in the waiting queue
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    public boolean removeUserInWaitingQueue(EventRemoveUserDTO tuple) {
+        boolean result;
+
+        // Check data
+        if (tuple==null || tuple.getUuid()==null || tuple.getNickname()==null)
+            result = false;
+        else {
+            // Find user and event
+            Event event = this.repository.findByUuid(tuple.getUuid()).orElse(null);
+            if (event==null)
+                result = false;
+            else {
+                User user = this.userRepository.findByNickname(tuple.getNickname()).orElse(null);
+                if (user==null)
+                    result = false;
+                else {
+                    result = event.removeUserInWaitingQueue(user);
+                }
+            }
+        }
         return result;
     }
 }
