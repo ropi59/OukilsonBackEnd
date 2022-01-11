@@ -170,6 +170,7 @@ public class EventService {
                     result = false;
                 else {
                     result = event.addUser(user);
+                    this.repository.save(event);
                 }
             }
         }
@@ -203,6 +204,7 @@ public class EventService {
                     result = false;
                 else {
                     result = event.addUserInWaitingQueue(user);
+                    this.repository.save(event);
                 }
             }
         }
@@ -235,6 +237,7 @@ public class EventService {
                     result = false;
                 else {
                     result = event.removeUser(user);
+                    this.repository.save(event);
                 }
             }
         }
@@ -267,6 +270,7 @@ public class EventService {
                     result = false;
                 else {
                     result = event.removeUserInWaitingQueue(user);
+                    this.repository.save(event);
                 }
             }
         }
