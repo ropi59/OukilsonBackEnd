@@ -134,8 +134,9 @@ public class EventControllerTest {
         // Mocking
         User user = this.createValidFullUser(3L, "toto");
         Game game = this.createValidFullGame(23L, "7 Wonders");
-        Location location = new Location(620L, "Euralille", "59777", "1 Place François Mitterrand");
+        Location location = new Location(620L, "Euralille", "59777", "1 Place François Mitterrand", null);
         Event event = this.createValidEvent(465L, game, user, location);
+        location.setEvent(event);
         ModelMapper mapper = new ModelMapper();
         EventDTO eventDTO = mapper.map(event, EventDTO.class);
         Mockito.when(service.findByUuid(eventDTO.getUuid())).thenReturn(eventDTO);
@@ -183,10 +184,14 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "tata");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
-        EventDTO eventDTO1 = mapper.map(this.createValidEvent(1L, game, user, location1), EventDTO.class);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée");
-        EventDTO eventDTO2 = mapper.map(this.createValidEvent(1L, game, user, location2), EventDTO.class);
+        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
+        Event event1 = this.createValidEvent(1L, game, user, location1);
+        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
+        location1.setEvent(event1);
+        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
+        Event event2 = this.createValidEvent(1L, game, user, location2);
+        location2.setEvent(event2);
+        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
         EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
         Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
         EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
@@ -224,10 +229,14 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
-        EventDTO eventDTO1 = mapper.map(this.createValidEvent(1L, game, user, location1), EventDTO.class);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée");
-        EventDTO eventDTO2 = mapper.map(this.createValidEvent(1L, game, user, location2), EventDTO.class);
+        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
+        Event event1 = this.createValidEvent(1L, game, user, location1);
+        location1.setEvent(event1);
+        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
+        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
+        Event event2 = this.createValidEvent(1L, game, user, location2);
+        location2.setEvent(event2);
+        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
         EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
         Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
         EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
@@ -265,10 +274,14 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
-        EventDTO eventDTO1 = mapper.map(this.createValidEvent(1L, game, user, location1), EventDTO.class);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée");
-        EventDTO eventDTO2 = mapper.map(this.createValidEvent(1L, game, user, location2), EventDTO.class);
+        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
+        Event event1 = this.createValidEvent(1L, game, user, location1);
+        location1.setEvent(event1);
+        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
+        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
+        Event event2 = this.createValidEvent(1L, game, user, location2);
+        location2.setEvent(event2);
+        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
         EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
         Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
         EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
@@ -353,8 +366,9 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
+        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
         Event event = this.createValidEvent(1L, game, user, location);
+        location.setEvent(event);
         EventDTO eventDTO = mapper.map(event, EventDTO.class);
         EventCreateDTO eventCreateDTO = mapper.map(event, EventCreateDTO.class);
         Mockito.when(service.save(ArgumentMatchers.any(EventCreateDTO.class))).thenReturn(eventDTO);
@@ -385,8 +399,9 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
+        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
         Event event = this.createValidEvent(1L, game, user, location);
+        location.setEvent(event);
         EventCreateDTO eventCreateDTO = mapper.map(event, EventCreateDTO.class);
         eventCreateDTO.setStartingDate(null);
 
@@ -412,8 +427,9 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
+        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
         Event event = this.createValidEvent(1L, game, user, location);
+        location.setEvent(event);
         EventDTO oldEvent = mapper.map(event, EventDTO.class);
         event.setMinPlayer(4);
         EventDTO newEvent = mapper.map(event, EventDTO.class);
@@ -447,8 +463,9 @@ public class EventControllerTest {
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
-        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées");
+        Location location = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
         Event event = this.createValidEvent(1L, game, user, location);
+        location.setEvent(event);
         EventUpdateDTO toUpdate = mapper.map(event, EventUpdateDTO.class);
 
         // Request
