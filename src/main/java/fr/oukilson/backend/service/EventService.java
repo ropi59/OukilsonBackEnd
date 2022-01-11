@@ -85,15 +85,6 @@ public class EventService {
             throw new NoSuchElementException("Event creation : Unknown user/game");
         }
 
-        // Find if the location is already in database
-        EventCreateLocationDTO locationDTO = toCreate.getLocation();
-        Optional<Location> location = this.locationRepository
-                .findByTownAndZipCodeAndAddress(
-                        locationDTO.getTown(),
-                        locationDTO.getZipCode(),
-                        locationDTO.getAddress());
-        location.ifPresent(event::setLocation);
-
         // Save and return
         return this.mapper.map(this.repository.save(event), EventDTO.class);
     }
@@ -127,19 +118,6 @@ public class EventService {
             } catch (Exception e) {
                 throw new NoSuchElementException("Event update : Unknown game");
             }
-        }
-
-        // If the location has been modified, updated it
-        EventUpdateLocationDTO newLocation = toUpdate.getLocation();
-        if (!oldLocation.getTown().equals(newLocation.getTown())
-                || !oldLocation.getZipCode().equals(newLocation.getZipCode())
-                || !oldLocation.getAddress().equals(newLocation.getAddress())) {
-            Optional<Location> location = this.locationRepository
-                    .findByTownAndZipCodeAndAddress(
-                            newLocation.getTown(),
-                            newLocation.getZipCode(),
-                            newLocation.getAddress());
-            location.ifPresent(event::setLocation);
         }
 
         // Save and return
