@@ -42,7 +42,7 @@ public class Event {
     @Column(name = "private")
     private Boolean isPrivate;	                    // True if the event is a private event
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;	                    // Where the event will be
 

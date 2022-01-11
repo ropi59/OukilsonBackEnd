@@ -17,4 +17,6 @@ public class Location {
     @Column(name = "zip_code")
     private String zipCode;
     private String address;
+    @OneToOne(mappedBy = "location")
+    private Event event;
 }
