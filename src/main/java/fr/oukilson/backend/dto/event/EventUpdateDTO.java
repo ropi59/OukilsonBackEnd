@@ -40,14 +40,11 @@ public class EventUpdateDTO {
     // TODO test event (service, controller) when uuid==null
     public boolean isValid(LocalDateTime date) {
         boolean result;
-        if (this.uuid==null || this.minPlayer<2 || this.minPlayer>this.maxPlayer || this.title== null
-                || this.description==null || this.game==null || this.game.getUuid()==null || this.location==null
-                || this.location.getTown()==null || this.limitDate==null || this.limitDate.isBefore(date)
-                || this.startingDate==null || this.startingDate.isBefore(this.limitDate)
-                || (this.endingDate!=null && this.endingDate.isBefore(this.startingDate)))
-            result = false;
-        else
-            result = true;
+        result = this.uuid != null && this.minPlayer >= 2 && this.minPlayer <= this.maxPlayer && this.title != null
+                && this.description != null && this.game != null && this.game.getUuid() != null && this.location != null
+                && this.location.getTown() != null && this.limitDate != null && !this.limitDate.isBefore(date)
+                && this.startingDate != null && !this.startingDate.isBefore(this.limitDate)
+                && (this.endingDate == null || !this.endingDate.isBefore(this.startingDate));
         return result;
     }
 }
