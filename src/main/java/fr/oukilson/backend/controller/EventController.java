@@ -41,7 +41,7 @@ public class EventController {
      * @return List<EventDTO>
      */
     @ResponseBody
-    @GetMapping("/search")
+    @PostMapping("/search")
     public List<EventDTO> findAllByFilters(@RequestBody EventSearchDTO toSearch) {
         return this.service.findByFilter(toSearch);
     }
