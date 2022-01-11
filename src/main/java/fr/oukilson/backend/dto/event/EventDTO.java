@@ -26,7 +26,7 @@ public class EventDTO {
     private Boolean isPrivate;
     private LocationDTO location;
     // Users registered in the event
-    private List<UserNameDTO> registeredUsers = new ArrayList<>();
+    private List<UserNameDTO> registeredUsers = new LinkedList<>();
     // Users in the waiting queue
-    private List<UserNameDTO> waitingUsers = new ArrayList<>();
+    private List<UserNameDTO> waitingUsers = new LinkedList<>();
 }
