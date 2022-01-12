@@ -1,7 +1,6 @@
-package fr.oukilson.backend;
+package fr.oukilson.backend.controller;
 
 import com.google.gson.*;
-import fr.oukilson.backend.controller.EventController;
 import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
@@ -86,7 +85,7 @@ public class EventControllerTest {
         event.setTitle("Valid event's title.");
         event.setMinPlayer(2);
         event.setMaxPlayer(5);
-        event.setIsPrivate(false);
+        event.setPrivate(false);
         event.setDescription("Une description plus que valide. YEAAAAAHHHHHHHHHHHHHH !!!!!!!!!!!!");
         event.setLocation(location);
         event.setGame(game);
@@ -477,4 +476,7 @@ public class EventControllerTest {
                         .content(gson.toJson(toUpdate))).
                 andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
+    // TODO test routes for adding
+    // TODO test routes for removing
 }

@@ -1,4 +1,4 @@
-package fr.oukilson.backend;
+package fr.oukilson.backend.service;
 
 import fr.oukilson.backend.dto.event.EventCreateDTO;
 import fr.oukilson.backend.dto.event.EventDTO;
@@ -12,7 +12,6 @@ import fr.oukilson.backend.repository.EventRepository;
 import fr.oukilson.backend.repository.GameRepository;
 import fr.oukilson.backend.repository.LocationRepository;
 import fr.oukilson.backend.repository.UserRepository;
-import fr.oukilson.backend.service.EventService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,7 +100,7 @@ public class EventServiceTest {
         event.setTitle("Valid event's title. "+event.getUuid());
         event.setMinPlayer(2);
         event.setMaxPlayer(5);
-        event.setIsPrivate(false);
+        event.setPrivate(false);
         event.setDescription("Une description plus que valide. YEAAAAAHHHHHHHHHHHHHH !!!!!!!!!!!!");
         event.setLocation(location);
         event.setGame(game);
@@ -1325,4 +1324,7 @@ public class EventServiceTest {
         // Assert
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
+
+    // TODO test services for adding
+    // TODO test services for removing
 }
