@@ -36,19 +36,14 @@ public class GameController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<GameDTO> save(@RequestBody GameDTO gameDTO) {
-        GameDTO response = this.service.save(gameDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
     @GetMapping("/uuid/{uuid}")
-    public ResponseEntity<GameUuidDTO> getUuid(@PathVariable String uuid) {
-        GameUuidDTO gameUuidDTO = service.findByUuid(uuid);
-        if (gameUuidDTO == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<GameUuidDTO> FindByUuid(@PathVariable String uuid) {
+        try {
+            Optional<GameUuidDTO> gameUuidDTO = this.service.findByUuid(uuid);
+            return ResponseEntity.ok(gameUuidDTO.get());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().header(e.getMessage()).build();
         }
-        return ResponseEntity.ok().body(gameUuidDTO);
     }
 
     @GetMapping("/display/{uuid}")
@@ -61,12 +56,14 @@ public class GameController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<GameUuidDTO> getName(@PathVariable String name) {
-        GameUuidDTO gameUuidDTO = service.findByName(name);
+    public ResponseEntity<List<GameUuidDTO>> findByName(@PathVariable String name) {
+        List<GameUuidDTO> gameUuidDTO = service.findByName(name);
         if (gameUuidDTO == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().body(gameUuidDTO);
     }
+
+
 
 }

@@ -50,59 +50,26 @@ public class GameService {
     }
 
     /**
-     * Persists a game
-     * @param gameDTO GameDTO
-     * @return EmployeDTO
-     */
-    public GameDTO save(GameDTO gameDTO) {
-        Game game = mapper.map(gameDTO, Game.class);
-        Game gameSaving = this.repository.save(game);
-        GameDTO response = mapper.map(gameSaving, GameDTO.class);
-        return response;
-    }
-
-    /**
-     * Gives a game in function of its uuid
+     * Provides a game in function of its uuid
      * @param uuid
      * @return
      */
-    public GameUuidDTO findByUuid(String uuid) {
-        // All the games are selected
-        List<Game> games = repository.findAll();
-        // Game targeted is instanced
-        GameUuidDTO targetedGameUuidDTO = new GameUuidDTO();
-        // Loop on all the games
-        for ( Game game : games) {
-            String testedUuid = game.getUuid();
-            // Test on uuid
-            if (testedUuid.equals(uuid)) {
-                targetedGameUuidDTO = mapper.map(game, GameUuidDTO.class);
-                //break;
-            }
-        }
-        return targetedGameUuidDTO;
+    public Optional<GameUuidDTO> findByUuid(String uuid) throws NoSuchElementException {
+        Optional<Game> game = this.repository.findByUuid(uuid);
+        return Optional.of(mapper.map(game.get(), GameUuidDTO.class));
     }
 
     /**
-     * Gives a game in function of its uuid
+     * Provides a list of game in function of its name or a name part
      * @param name
-     * @return
+     * @return Optional<GameUuidDTO>
      */
-    public GameUuidDTO findByName(String name) {
-        // All the games are selected
-        List<Game> games = repository.findAll();
-        // Game targeted is instanced
-        GameUuidDTO targetedGameUuidDTO = new GameUuidDTO();
-        // Loop on all the games
-        for ( Game game : games) {
-            String testedName = game.getName();
-            // Test on uuid
-            if (testedName.equals(name)) {
-                targetedGameUuidDTO = mapper.map(game, GameUuidDTO.class);
-                //break;
-            }
-        }
-        return targetedGameUuidDTO;
+    public List<GameUuidDTO> findByName(String name) {
+        List<GameUuidDTO> result = new LinkedList<>();
+        repository.findAllByNameContaining(name).forEach(
+                g -> result.add(this.mapper.map(g, GameUuidDTO.class))
+        );
+        return result;
     }
 
     public GameDTO DisplayByUuid(String uuid) {
@@ -121,6 +88,4 @@ public class GameService {
         }
         return targetedGameDTO;
     }
-
-
 }
