@@ -1,9 +1,6 @@
 package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dto.event.EventCreateDTO;
-import fr.oukilson.backend.dto.event.EventDTO;
-import fr.oukilson.backend.dto.event.EventSearchDTO;
-import fr.oukilson.backend.dto.event.EventUpdateDTO;
+import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.entity.Event;
 import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.entity.Location;
@@ -304,7 +301,7 @@ public class EventServiceTest {
         }
     }
 
-    // method save
+    // Method save
 
     /**
      * Testing correct event creation
@@ -321,10 +318,7 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
+        BDDMockito.when(this.locationRepository.save(ArgumentMatchers.any(Location.class))).thenReturn(location);
 
         // Save
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -336,6 +330,10 @@ public class EventServiceTest {
         }
         finally {
             Assertions.assertNotNull(result);
+            // The method service.save attributes its own uuid and creation date, so the previous handmade event
+            // must alter before testing
+            event.setUuid(result.getUuid());
+            event.setCreationDate(result.getCreationDate());
             Assertions.assertEquals(this.mapper.map(event, EventDTO.class), result);
         }
     }
@@ -356,10 +354,7 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
+        BDDMockito.when(this.locationRepository.save(ArgumentMatchers.any(Location.class))).thenReturn(location);
 
         // Save
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -371,6 +366,10 @@ public class EventServiceTest {
         }
         finally {
             Assertions.assertNotNull(result);
+            // The method service.save attributes its own uuid and creation date, so the previous handmade event
+            // must alter before testing
+            event.setUuid(result.getUuid());
+            event.setCreationDate(result.getCreationDate());
             Assertions.assertEquals(this.mapper.map(event, EventDTO.class), result);
         }
     }
@@ -391,10 +390,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -417,10 +412,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -443,10 +434,7 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
+        BDDMockito.when(this.locationRepository.save(ArgumentMatchers.any(Location.class))).thenReturn(location);
 
         // Save
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -458,6 +446,10 @@ public class EventServiceTest {
         }
         finally {
             Assertions.assertNotNull(result);
+            // The method service.save attributes its own uuid and creation date, so the previous handmade event
+            // must alter before testing
+            event.setUuid(result.getUuid());
+            event.setCreationDate(result.getCreationDate());
             Assertions.assertEquals(this.mapper.map(event, EventDTO.class), result);
         }
     }
@@ -479,10 +471,7 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
+        BDDMockito.when(this.locationRepository.save(ArgumentMatchers.any(Location.class))).thenReturn(location);
 
         // Save
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -494,6 +483,10 @@ public class EventServiceTest {
         }
         finally {
             Assertions.assertNotNull(result);
+            // The method service.save attributes its own uuid and creation date, so the previous handmade event
+            // must alter before testing
+            event.setUuid(result.getUuid());
+            event.setCreationDate(result.getCreationDate());
             Assertions.assertEquals(this.mapper.map(event, EventDTO.class), result);
         }
     }
@@ -514,10 +507,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -540,10 +529,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -567,10 +552,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -593,10 +574,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -620,10 +597,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -647,10 +620,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -659,8 +628,9 @@ public class EventServiceTest {
 
     /**
      * Test event creation with a username not in database
+     * Must throw NoSuchElementException
      */
-    @DisplayName("Test : can't find creator user in database")
+    @DisplayName("Test : can't find creator user in database NoSuchElementException")
     @Test
     public void testSaveWhenCreatorIsNotInDatabase() {
         // Mock event
@@ -671,10 +641,6 @@ public class EventServiceTest {
         location.setEvent(event);
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -698,10 +664,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -710,8 +672,9 @@ public class EventServiceTest {
 
     /**
      * Testing creation event with a game not in database
+     * Must throw NoSuchElementException
      */
-    @DisplayName("Test : game for event not in database")
+    @DisplayName("Test : game for event not in database NoSuchElementException")
     @Test
     public void testSaveWhenGameIsNotInDatabase() {
         // Mock event
@@ -722,10 +685,6 @@ public class EventServiceTest {
         location.setEvent(event);
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -749,10 +708,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
@@ -776,17 +731,13 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.save(ArgumentMatchers.any(Event.class))).thenReturn(event);
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // Assert
         EventCreateDTO toCreate = this.mapper.map(event, EventCreateDTO.class);
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.save(toCreate));
     }
 
-    // method update
+    // Method update
 
     /**
      * Update event testing
@@ -803,10 +754,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -842,10 +789,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -880,10 +823,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -911,10 +850,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -943,10 +878,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -981,10 +912,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1019,10 +946,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1050,10 +973,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1081,10 +1000,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1111,10 +1026,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1142,10 +1053,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1173,10 +1080,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1205,10 +1108,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1238,10 +1137,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event with the new game
         Event newEvent = new Event();
@@ -1278,10 +1173,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1309,10 +1200,6 @@ public class EventServiceTest {
         BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
         BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
         BDDMockito.when(this.gameRepository.findByUuid(game.getUuid())).thenReturn(Optional.of(game));
-        BDDMockito
-                .when(this.locationRepository
-                        .findByTownAndZipCodeAndAddress(location.getTown(), location.getZipCode(), location.getAddress()))
-                .thenReturn(Optional.of(location));
 
         // The new event
         Event newEvent = new Event();
@@ -1325,6 +1212,4 @@ public class EventServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.service.update(toUpdate));
     }
 
-    // TODO test services for adding
-    // TODO test services for removing
 }
