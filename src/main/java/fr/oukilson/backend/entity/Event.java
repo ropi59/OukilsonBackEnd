@@ -18,11 +18,11 @@ public class Event {
     private String uuid;                            // String uuid to access from the client
     private String title;                           // Event's title
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User creator;		                    // The user who creates this event
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     private Game game;		        	            // Game the event is about
 
@@ -30,31 +30,31 @@ public class Event {
     private int minPlayer;		                    // Minimum number of players to run the event
     @Column(name = "max_player")
     private int maxPlayer;		                    // Maximum number of players to run the event
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime creationDate;	                    // Event creation date
-    @Column(name = "start_date")
+    @Column(name = "start_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime startingDate;	                    // Event starting date
-    @Column(name = "end_date")
+    @Column(name = "end_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime endingDate;	                    // Event ending date
-    @Column(name = "limit_date")
+    @Column(name = "limit_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime limitDate;                         // End of inscription date
     private String description;	                    // Description of the event
     @Column(name = "private")
-    private Boolean isPrivate;	                    // True if the event is a private event
+    private boolean isPrivate;	                    // True if the event is a private event
 
     @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;	                    // Where the event will be
 
     // Users registered in the event
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "event_user",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> registeredUsers = new LinkedList<>();
 
     // Users in the waiting queue
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "event_user_in_queue",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
