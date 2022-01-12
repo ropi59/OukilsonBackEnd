@@ -87,7 +87,7 @@ public class Event {
      * @return True if added
      */
     public boolean addUser(User user) {
-        return this.addUserInList(this.registeredUsers, user);
+        return this.addUserInList(this.registeredUsers, this.waitingUsers, user);
     }
 
     /**
@@ -96,23 +96,25 @@ public class Event {
      * @return True if added
      */
     public boolean addUserInWaitingQueue(User user) {
-        return this.addUserInList(this.waitingUsers, user);
+        return this.addUserInList(this.waitingUsers, this.registeredUsers, user);
     }
 
     /**
      * Add a user in a LinkedList only if :
-     * - the user is not in the list
-     * - the list is not full
-     * @param list LinkedList
+     * - the user is not in the list 'toAdd'
+     * - the user is not in the list 'exclusion'
+     * - the list 'toAdd' is not full
+     * @param toAdd List where to add the user
+     * @param exclusion Exclusion list
      * @param user User
      * @return True if added
      */
-    private boolean addUserInList(List<User> list, User user) {
+    private boolean addUserInList(List<User> toAdd, List<User> exclusion, User user) {
         boolean result;
-        if (list.size()==this.maxPlayer || this.isUserInList(list, user))
+        if (toAdd.size()==this.maxPlayer || this.isUserInList(toAdd, user) || this.isUserInList(exclusion, user))
             result = false;
         else
-            result = list.add(user);
+            result = toAdd.add(user);
         return result;
     }
 
