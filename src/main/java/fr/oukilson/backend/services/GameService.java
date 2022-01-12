@@ -72,20 +72,11 @@ public class GameService {
         return result;
     }
 
-    public GameDTO DisplayByUuid(String uuid) {
-        // All the games are selected
-        List<Game> games = repository.findAll();
-        // Game targeted is instanced
-        GameDTO targetedGameDTO = new GameDTO();
-        // Loop on all the games
-        for ( Game game : games) {
-            String testedUuid = game.getUuid();
-            // Test on uuid
-            if (testedUuid.equals(uuid)) {
-                targetedGameDTO = mapper.map(game, GameDTO.class);
-                //break;
-            }
-        }
-        return targetedGameDTO;
+    public Optional<GameDTO> displayByUuid(String uuid) throws NoSuchElementException {
+        Optional<Game> game = this.repository.findByUuid(uuid);
+        return Optional.of(mapper.map(game.get(), GameDTO.class));
     }
+
+
+
 }
