@@ -25,30 +25,6 @@ public class GameService {
         this.mapper = mapper;
     }
 
-
-    /**
-     * Return a list of games
-     * @return List<gameDTO>
-     */
-    public List<GameDTO> findAll() {
-        List<GameDTO> gameDTOList = new ArrayList<>();
-        this.repository.findAll().forEach(game -> {
-            gameDTOList.add(mapper.map(game, GameDTO.class));
-        });
-        return gameDTOList;
-    }
-
-
-    /**
-     * Return a game from its ID
-     * @param id Long
-     * @return Optional<GameDTO>
-     */
-    public Optional<GameDTO> findById(final Long id) throws NoSuchElementException {
-        Optional<Game> game = this.repository.findById(id);
-        return Optional.of(mapper.map(game.get(), GameDTO.class));
-    }
-
     /**
      * Provides a game in function of its uuid
      * @param uuid

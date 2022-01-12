@@ -19,23 +19,6 @@ public class GameController {
     @Autowired
     private GameService service;
 
-
-    @GetMapping
-    public List<GameDTO> findAll() {
-        return this.service.findAll();
-    }
-
-
-    @GetMapping("{id}")
-    public ResponseEntity<GameDTO> findById(@PathVariable Long id) {
-        try {
-            Optional<GameDTO> gameDTO = this.service.findById(id);
-            return ResponseEntity.ok(gameDTO.get());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().header(e.getMessage()).build();
-        }
-    }
-
     @GetMapping("/uuid/{uuid}")
     public ResponseEntity<GameUuidDTO> findByUuid(@PathVariable String uuid) {
         try {

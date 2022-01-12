@@ -99,6 +99,66 @@ public class OukilsonBackendApplicationTests {
 
 
 	/**
+	 * A 404 page is return if the information of a game is not delivered by the route
+	 * @throws Exception
+	 */
+	@Test
+	public void testDisplayByUuidWhereWrongUuidOrNonexistentGame() throws Exception {
+		// A request is executed on /game/display/248efeb9-3d1a-4905-89b3-7289ac47c682
+		// because of the perform method of mockMvc
+		this.mockMvc.perform(get("/display/248efeb9-3d1a-4905-89b3-7289ac47c682"))
+				.andExpect(status().isNotFound()); // The status must be 404
+	}
+
+
+	/**
+	 * The route which must be return the information of an existing game with its uuid is verified
+	 * @throws Exception
+	 */
+	@Test
+	public void testDisplayByUuid() throws Exception {
+		/**
+		 * START
+		 * The service is mocked to return a gameUuidDTO
+		 * The existence of a game is simulated in the DB
+		 */
+		// A gameUuidDTO is created
+		GameDTO gameDTO = this.gameDTO();
+		// The given DBMockito method is called to mock the service
+		// The parameter of this method is the service method which is mocked
+		BDDMockito.given(service.displayByUuid("fecc2fb7-8af2-4f80-907e-bcac17739749"))
+				.willReturn(Optional.of(gameDTO)); // DBMockito is called if this method is called
+		// Its response is the parameter
+		/**
+		 * END
+		 */
+		/// The route which returns the game is tested
+		MvcResult result = this.mockMvc.perform(get("/game/display/fecc2fb7-8af2-4f80-907e-bcac17739749"))
+				.andExpect(status().isOk())
+				.andReturn();
+		// The mockMvc result is in the result variable
+		// A Gson object is initialized to transform the object in JSON
+		Gson json = new GsonBuilder().create();
+		// The JSON body is transformed into GameUuidDTO
+		GameDTO body = json.fromJson(
+				// The content of MyResult is return,
+				// The response is delivered with : "getResponse"
+				// The body content of response is delivered in String: "getContentAsString"
+				result.getResponse().getContentAsString(),
+				// Gson transforms the body object in GameUuidDTO
+				GameDTO.class
+		);
+		// Tests
+		Assertions.assertEquals(body.getUuid(), this.gameDTO().getUuid());
+		Assertions.assertEquals(body.getName(), this.gameDTO().getName());
+		Assertions.assertEquals(body.getMinPlayer(), this.gameDTO().getMinPlayer());
+		Assertions.assertEquals(body.getMaxPlayer(), this.gameDTO().getMaxPlayer());
+		Assertions.assertEquals(body.getMinTime(), this.gameDTO().getMinTime());
+		Assertions.assertEquals(body.getMaxTime(), this.gameDTO().getMaxTime());
+		Assertions.assertEquals(body.getMinAge(), this.gameDTO().getMinAge());
+	}
+
+	/**
 	 * The route which must return an existing game with its name is verified
 	 * @throws Exception
 	 */
