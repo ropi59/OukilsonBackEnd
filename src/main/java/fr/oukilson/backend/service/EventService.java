@@ -81,7 +81,10 @@ public class EventService {
         }
 
         // Save and return
-        return this.mapper.map(this.repository.save(event), EventDTO.class);
+        event.getLocation().setEvent(event);
+        Location location = this.locationRepository.save(event.getLocation());
+        event.setLocation(location);
+        return this.mapper.map(event, EventDTO.class);
     }
 
     /**
@@ -102,21 +105,23 @@ public class EventService {
 
         // Update attribute
         String oldGameUuid = event.getGame().getUuid();
-        Location oldLocation = event.getLocation();
         this.mapper.map(toUpdate, event);
 
         // If the event's game has been modified, updated it
         if (!oldGameUuid.equals(toUpdate.getGame().getUuid())) {
-            try {
-                Optional<Game> game = this.gameRepository.findByUuid(toUpdate.getGame().getUuid());
-                event.setGame(game.get());
-            } catch (Exception e) {
-                throw new NoSuchElementException("Event update : Unknown game");
+            Optional<Game> optionalGame = this.gameRepository.findByUuid(toUpdate.getGame().getUuid());
+            if (optionalGame.isPresent()) {
+                Game game = optionalGame.get();
+                event.setGame(game);
+                this.repository.save(event);
             }
+            else
+                throw new NoSuchElementException("Event update : Unknown game");
         }
+        else
+            this.repository.save(event);
 
-        // Save and return
-        return this.mapper.map(this.repository.save(event), EventDTO.class);
+        return this.mapper.map(event, EventDTO.class);
     }
 
     /**
