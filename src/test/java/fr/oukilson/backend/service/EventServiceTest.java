@@ -1462,7 +1462,187 @@ public class EventServiceTest {
         Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
     }
 
+    // Method removeUserInEvent
 
-    // TODO test services for removing
+    /**
+     * Test removeUserInEvent when used with a null argument
+     */
+    @DisplayName("Test removeUserInEvent : given argument is null")
+    @Test
+    public void testRemoveUserInEventWithNullArgument() {
+        Assertions.assertFalse(this.service.removeUserInEvent(null));
+    }
 
+    /**
+     * Test removeUserInEvent when used with a null event's uuid
+     */
+    @DisplayName("Test removeUserInEvent : event's uuid is null")
+    @Test
+    public void testRemoveUserInEventWithNullEventUuid() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(null, "toto");
+        Assertions.assertFalse(this.service.removeUserInEvent(tuple));
+    }
+
+    /**
+     * Test removeUserInEvent when used with a null user's name
+     */
+    @DisplayName("Test removeUserInEvent : user's name is null")
+    @Test
+    public void testRemoveUserInEventWithNullUserName() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO("b1cdd964-dc35-4be9-9649-0db6a6afe2f1", null);
+        Assertions.assertFalse(this.service.removeUserInEvent(tuple));
+    }
+
+    /**
+     * Test removeUserInEvent when used with an unknown event
+     */
+    @DisplayName("Test removeUserInEvent : event is not in database")
+    @Test
+    public void testRemoveUserInEventWithUnknownEvent() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO("b1cdd964-dc35-4be9-9649-0db6a6afe2f1", "toto");
+        Assertions.assertFalse(this.service.removeUserInEvent(tuple));
+    }
+
+    /**
+     * Test removeUserInEvent when used with an unknown user
+     */
+    @DisplayName("Test removeUserInEvent : user is not in database")
+    @Test
+    public void testRemoveUserInEventWithUnknownUser() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), "toto");
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        Assertions.assertFalse(this.service.removeUserInEvent(tuple));
+    }
+
+    /**
+     * Test removeUserInEvent when given a user who is not in the registered list
+     */
+    @DisplayName("Test removeUserInEvent : user is not in the registered list")
+    @Test
+    public void testRemoveUserInEvent() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), user.getNickname());
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(tuple.getNickname())).thenReturn(Optional.of(user));
+        Assertions.assertFalse(this.service.removeUserInEvent(tuple));
+    }
+
+    /**
+     * Test removeUserInEvent when given a user is in the registered list
+     */
+    @DisplayName("Test removeUserInEvent : user is in the registered list")
+    @Test
+    public void testRemoveUserInEventWhenUserInRegisteredList() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), user.getNickname());
+        event.addUser(user);
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(tuple.getNickname())).thenReturn(Optional.of(user));
+
+        Assertions.assertTrue(event.getRegisteredUsers().contains(user));
+        Assertions.assertTrue(this.service.removeUserInEvent(tuple));
+        Assertions.assertFalse(event.getRegisteredUsers().contains(user));
+    }
+
+    // Method removeUserInWaitingQueue
+
+    /**
+     * Test removeUserInWaitingQueue when used with a null argument
+     */
+    @DisplayName("Test removeUserInWaitingQueue : given argument is null")
+    @Test
+    public void testRemoveUserInWaitingQueueWithNullArgument() {
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(null));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when used with a null event's uuid
+     */
+    @DisplayName("Test removeUserInWaitingQueue : event's uuid is null")
+    @Test
+    public void testRemoveUserInWaitingQueueWithNullEventUuid() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(null, "toto");
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when used with a null user's name
+     */
+    @DisplayName("Test removeUserInWaitingQueue : user's name is null")
+    @Test
+    public void testRemoveUserInWaitingQueueWithNullUserName() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO("b1cdd964-dc35-4be9-9649-0db6a6afe2f1", null);
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when used with an unknown event
+     */
+    @DisplayName("Test removeUserInWaitingQueue : event is not in database")
+    @Test
+    public void testRemoveUserInWaitingQueueWithUnknownEvent() {
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO("b1cdd964-dc35-4be9-9649-0db6a6afe2f1", "toto");
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when used with an unknown user
+     */
+    @DisplayName("Test removeUserInWaitingQueue : user is not in database")
+    @Test
+    public void testRemoveUserInWaitingQueueWithUnknownUser() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), "toto");
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when the user is not in the waiting list
+     */
+    @DisplayName("Test removeUserInWaitingQueue : user is not in the waiting list")
+    @Test
+    public void testRemoveUserInWaitingQueue() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), user.getNickname());
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(tuple.getNickname())).thenReturn(Optional.of(user));
+        Assertions.assertFalse(this.service.removeUserInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when given a user is in the waiting list
+     */
+    @DisplayName("Test removeUserInWaitingQueue : user is in the waiting list")
+    @Test
+    public void testRemoveUserInWaitingQueueWhenUserInWaitingList() {
+        Game game = this.createValidFullGame(5L, "Splendor");
+        User user = this.createValidFullUser(5L, "nuageux");
+        Location location = new Location(5L, "Paris", null, null, null);
+        Event event = this.createValidEvent(5L, game, user, location);
+        EventRemoveUserDTO tuple = new EventRemoveUserDTO(event.getUuid(), user.getNickname());
+        event.addUserInWaitingQueue(user);
+        BDDMockito.when(this.repository.findByUuid(tuple.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(tuple.getNickname())).thenReturn(Optional.of(user));
+
+        Assertions.assertTrue(event.getWaitingUsers().contains(user));
+        Assertions.assertTrue(this.service.removeUserInWaitingQueue(tuple));
+        Assertions.assertFalse(event.getWaitingUsers().contains(user));
+    }
 }
