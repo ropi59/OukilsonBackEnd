@@ -356,6 +356,21 @@ public class EventControllerTest {
     // Test save route
 
     /**
+     * Test event creation with a null body
+     */
+    @DisplayName("Test : saving an event with a null body")
+    @Test
+    public void testSaveNullBody() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
      * Test event creation when everything is ok
      */
     @DisplayName("Test : create an event with valid fields")
@@ -415,6 +430,18 @@ public class EventControllerTest {
     }
 
     // Testing update route
+
+    @DisplayName("Test : updating an event with a null body")
+    @Test
+    public void testUpdateNullBody() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .put(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     /**
      * Test event update when everything is ok
