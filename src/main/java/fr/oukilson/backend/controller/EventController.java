@@ -73,7 +73,7 @@ public class EventController {
      * @return The updated event
      */
     @PutMapping
-    public ResponseEntity<EventDTO> updateById(@RequestBody EventUpdateDTO toUpdate) {
+    public ResponseEntity<EventDTO> update(@RequestBody EventUpdateDTO toUpdate) {
         ResponseEntity<EventDTO> result;
         try {
             EventDTO event = this.service.update(toUpdate);
