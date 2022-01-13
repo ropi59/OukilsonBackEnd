@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class GameConfiguration {
-
     @Bean
     public GameService gameService(GameRepository repository, ModelMapper mapper) {
         return new GameService(repository, mapper);
