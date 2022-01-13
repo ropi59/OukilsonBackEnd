@@ -1,18 +1,12 @@
 package fr.oukilson.backend.dto.event;
 
-import fr.oukilson.backend.dto.game.GameUuidDTO;
-import fr.oukilson.backend.dto.user.UserNameDTO;
-import fr.oukilson.backend.entity.Location;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.Date;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventSearchDTO {
-    private Date startingDate;
+    private LocalDateTime startingDate;
     private String town;
 }

@@ -2,11 +2,9 @@ package fr.oukilson.backend.controller;
 
 import fr.oukilson.backend.dto.event.*;
 import fr.oukilson.backend.service.EventService;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -35,14 +33,15 @@ public class EventController {
     }
 
     /**
-     * Search for an event by one of this two options :
+     * Search for events by one of this two options :
      * - date after the provided date
      * - happening in a town
+     * When both options are set, only search by "date after" with the provided date.
      * @param toSearch EventSearchDTO
      * @return List<EventDTO>
      */
     @ResponseBody
-    @GetMapping("/search")
+    @PostMapping("/search")
     public List<EventDTO> findAllByFilters(@RequestBody EventSearchDTO toSearch) {
         return this.service.findByFilter(toSearch);
     }
@@ -53,11 +52,14 @@ public class EventController {
      * @return The created event
      */
     @PostMapping
-    public ResponseEntity<EventCreateDTO> save(@RequestBody EventCreateDTO toCreate) {
-        ResponseEntity<EventCreateDTO> result;
+    public ResponseEntity<EventDTO> save(@RequestBody EventCreateDTO toCreate) {
+        ResponseEntity<EventDTO> result;
         try {
-            EventCreateDTO event = this.service.save(toCreate);
-            result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            EventDTO event = this.service.save(toCreate);
+            if (event!=null)
+                result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            else
+                result = ResponseEntity.badRequest().build();
         }
         catch(Exception e) {
             result = ResponseEntity.badRequest().build();
@@ -71,8 +73,19 @@ public class EventController {
      * @return The updated event
      */
     @PutMapping
-    public ResponseEntity<EventUpdateDTO> updateById(@RequestBody EventUpdateDTO toUpdate) {
-        return ResponseEntity.ok(this.service.update(toUpdate));
+    public ResponseEntity<EventDTO> update(@RequestBody EventUpdateDTO toUpdate) {
+        ResponseEntity<EventDTO> result;
+        try {
+            EventDTO event = this.service.update(toUpdate);
+            if (event!=null)
+                result = ResponseEntity.status(HttpStatus.CREATED).body(event);
+            else
+                result = ResponseEntity.badRequest().build();
+        }
+        catch(Exception e) {
+            result = ResponseEntity.badRequest().build();
+        }
+        return result;
     }
 
     /**
@@ -84,5 +97,49 @@ public class EventController {
     public ResponseEntity<Boolean> deleteByUuid(@RequestBody EventDeleteDTO toDelete) {
         this.service.deleteByUuid(toDelete.getUuid());
         return ResponseEntity.ok(true);
+    }
+
+    /**
+     * Route to add a user (with his nickname) in an event (with its uuid)
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    @PostMapping("/add_user")
+    public ResponseEntity<Boolean> addUserInEvent(@RequestBody EventAddUserDTO tuple) {
+        boolean result = this.service.addUserInEvent(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to add a user (with his nickname) in the waiting list of an event (with its uuid)
+     * @param tuple EventAddUserDTO
+     * @return True if added
+     */
+    @PostMapping("/add_user/waiting")
+    public ResponseEntity<Boolean> addUserInEventInWaitingQueue(@RequestBody EventAddUserDTO tuple) {
+        boolean result = this.service.addUserInEventInWaitingQueue(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to remove a user (with his nickname) in an event (with its uuid)
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    @PostMapping("/remove_user")
+    public ResponseEntity<Boolean> removeUserInEvent(@RequestBody EventRemoveUserDTO tuple) {
+        boolean result = this.service.removeUserInEvent(tuple);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Route to remove a user (with his nickname) in the waiting list of an event (with its uuid)
+     * @param tuple EventRemoveUserDTO
+     * @return True if removed
+     */
+    @PostMapping("/remove_user/waiting")
+    public ResponseEntity<Boolean> removeUserInWaitingQueue(@RequestBody EventRemoveUserDTO tuple) {
+        boolean result = this.service.removeUserInWaitingQueue(tuple);
+        return ResponseEntity.ok(result);
     }
 }
