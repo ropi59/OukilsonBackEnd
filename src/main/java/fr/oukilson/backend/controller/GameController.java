@@ -19,14 +19,15 @@ public class GameController {
     @Autowired
     private GameService service;
 
-    @GetMapping("/uuid/{uuid}")
+    @GetMapping("/{uuid}")
     public ResponseEntity<GameUuidDTO> findByUuid(@PathVariable String uuid) {
-        try {
-            Optional<GameUuidDTO> gameUuidDTO = this.service.findByUuid(uuid);
-            return ResponseEntity.ok(gameUuidDTO.get());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().header(e.getMessage()).build();
-        }
+        ResponseEntity<GameUuidDTO> result;
+        Optional<GameUuidDTO> gameUuidDTO = this.service.findByUuid(uuid);
+        if (gameUuidDTO.isPresent())
+            result = ResponseEntity.ok(gameUuidDTO.get());
+        else
+            result = ResponseEntity.notFound().build();
+        return result;
     }
 
     @GetMapping("/display/{uuid}")
