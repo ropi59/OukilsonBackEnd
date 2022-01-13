@@ -60,7 +60,7 @@ public class EventService {
      * @return The created event
      */
     public EventDTO save(EventCreateDTO toCreate)
-            throws NoSuchElementException, IllegalArgumentException {
+            throws NoSuchElementException, IllegalArgumentException, NullPointerException {
         // Check data
         LocalDateTime rightNow = LocalDateTime.now();
         if (!toCreate.isValid(rightNow))
@@ -93,7 +93,7 @@ public class EventService {
      * @return The updated event
      */
     public EventDTO update(EventUpdateDTO toUpdate)
-            throws NoSuchElementException, IllegalArgumentException {
+            throws NoSuchElementException, IllegalArgumentException, NullPointerException {
         // Find the event to update
         Event event = this.repository.findByUuid(toUpdate.getUuid()).orElse(null);
         if (event==null)
