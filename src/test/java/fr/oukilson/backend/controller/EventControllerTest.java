@@ -410,8 +410,8 @@ public class EventControllerTest {
                         .post(route)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(eventCreateDTO))).
-                andExpect(MockMvcResultMatchers.status().isBadRequest());
+                        .content(gson.toJson(eventCreateDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     // Testing update route
@@ -473,10 +473,192 @@ public class EventControllerTest {
                         .put(route)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(toUpdate))).
-                andExpect(MockMvcResultMatchers.status().isBadRequest());
+                        .content(gson.toJson(toUpdate)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
-    // TODO test routes for adding
+    // Method addUserInEvent
+
+    /**
+     * Test addUserInEvent with a null body
+     */
+    @DisplayName("Test addUserInEvent : null body")
+    @Test
+    public void testAddUserInEventWithNullValue() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test addUserInEvent with a null user's name
+     */
+    @DisplayName("Test addUserInEvent : null user's name")
+    @Test
+    public void testAddUserInEventWithNullUserName() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test addUserInEvent with a null event's uuid
+     */
+    @DisplayName("Test addUserInEvent : null event's uuid")
+    @Test
+    public void testAddUserInEventWithNullEventUuid() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test addUserInEvent when everything is ok
+     */
+    @DisplayName("Test addUserInEvent : everything is ok")
+    @Test
+    public void testAddUserInEvent() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(true));
+    }
+
+    /**
+     * Test addUserInEvent when game or user is not found
+     */
+    @DisplayName("Test addUserInEvent : game or user not found")
+    @Test
+    public void testAddUserInEventUnknownElementInDatabase() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    // Method addUserInEventInWaitingQueue
+
+    /**
+     * Test addUserInEventInWaitingQueue with a null body
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : null body")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullValue() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test addUserInEventInWaitingQueue with a null user's name
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : null user's name")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullUserName() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test addUserInEventInWaitingQueue with a null event's uuid
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : null event's uuid")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullEventUuid() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test addUserInEventInWaitingQueue when everything is ok
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : everything is ok")
+    @Test
+    public void testAddUserInEventInWaitingQueue() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(true));
+    }
+
+    /**
+     * Test addUserInEventInWaitingQueue when game or user is not found
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : game or user not found")
+    @Test
+    public void testAddUserInEventInWaitingQueueUnknownElementInDatabase() throws Exception {
+        EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/add_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+
     // TODO test routes for removing
 }
