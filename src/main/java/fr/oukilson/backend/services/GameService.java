@@ -17,23 +17,25 @@ public class GameService {
     }
 
     /**
-     * Provides a game in function of its uuid
-     * @param uuid
-     * @return
+     * Return all the game info by providing its uuid.
+     * @param uuid String uuid of the game
+     * @return Optional<GameUuidDTO>
      */
-    public Optional<GameUuidDTO> findByUuid(String uuid) throws NoSuchElementException {
+    public GameDTO findByUuid(String uuid) {
+        GameDTO result = null;
         Optional<Game> game = this.repository.findByUuid(uuid);
-        return Optional.of(mapper.map(game.get(), GameUuidDTO.class));
+        if (game.isPresent()) result = this.mapper.map(game.get(), GameDTO.class);
+        return result;
     }
 
     /**
-     * Provides a list of game in function of its name or a name part
-     * @param name
-     * @return Optional<GameUuidDTO>
+     * Return a list of all games sharing the same name or part of it.
+     * @param game GameUuidDTO
+     * @return List of GameUuidDTO
      */
-    public List<GameUuidDTO> findByName(String name) {
+    public List<GameUuidDTO> findByName(GameUuidDTO game) {
         List<GameUuidDTO> result = new LinkedList<>();
-        repository.findAllByNameContaining(name).forEach(
+        repository.findAllByNameContaining(game.getName()).forEach(
                 g -> result.add(this.mapper.map(g, GameUuidDTO.class))
         );
         return result;
