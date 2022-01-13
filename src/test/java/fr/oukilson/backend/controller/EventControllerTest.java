@@ -371,6 +371,22 @@ public class EventControllerTest {
     }
 
     /**
+     * Test event creation when the creation method throws an exception
+     */
+    @DisplayName("Test : event creation when the save function throws an exception")
+    @Test
+    public void testSaveCatchBranch() throws Exception {
+        Mockito.when(this.service.save(ArgumentMatchers.any(EventCreateDTO.class))).thenThrow(new RuntimeException());
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
      * Test event creation when everything is ok
      */
     @DisplayName("Test : create an event with valid fields")
@@ -431,12 +447,31 @@ public class EventControllerTest {
 
     // Testing update route
 
+    /**
+     * Test event update with null body
+     */
     @DisplayName("Test : updating an event with a null body")
     @Test
     public void testUpdateNullBody() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
                         .put(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test event update when the update method throws an exception
+     */
+    @DisplayName("Test : event update when the update function throws an exception")
+    @Test
+    public void testUpdateCatchBranch() throws Exception {
+        Mockito.when(this.service.update(ArgumentMatchers.any(EventUpdateDTO.class))).thenThrow(new RuntimeException());
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
