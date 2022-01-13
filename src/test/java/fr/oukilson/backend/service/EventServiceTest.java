@@ -1337,7 +1337,132 @@ public class EventServiceTest {
         Assertions.assertFalse(this.service.addUserInEvent(tuple));
     }
 
-    // TODO test services for adding
+    // Method addUserInEventInWaitingQueue
+
+    /**
+     * Test method addUserInEventInWaitingQueue when given argument is null
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when given argument is null")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullArgument() {
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(null));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when event's uuid is null
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when event's uuid is null")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullEventUuid() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        tuple.setNickname("toto");
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when user's name is null
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when user's name is null")
+    @Test
+    public void testAddUserInEventInWaitingQueueWithNullUserName() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        tuple.setUuid("0c1edfd1-a240-4d0a-bc9f-93b4b5bb2e81");
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when the game doesn't exist in database
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when game is not in database")
+    @Test
+    public void testAddUserInEventInWaitingQueueWhenGameDoesntExist() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        tuple.setNickname("toto");
+        tuple.setUuid("0c1edfd1-a240-4d0a-bc9f-93b4b5bb2e81");
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when the user doesn't exist in database
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when game is not in database")
+    @Test
+    public void testAddUserInEventInWaitingQueueWhenUserDoesntExist() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        Event event = this.createValidEvent(
+                1L,
+                this.createValidFullGame(1L, "Le jeu"),
+                this.createValidFullUser(100L, "Bidulle"),
+                new Location(100L, "Paris", null, null, null));
+        tuple.setNickname("toto");
+        tuple.setUuid(event.getUuid());
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when everything is fine
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when everything is fine")
+    @Test
+    public void testAddUserInEventInWaitingQueue() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        User user = this.createValidFullUser(1L, "toto");
+        Event event = this.createValidEvent(
+                1L,
+                this.createValidFullGame(1L, "Le jeu"),
+                this.createValidFullUser(100L, "Bidulle"),
+                new Location(100L, "Paris", null, null, null));
+        tuple.setUuid(event.getUuid());
+        tuple.setNickname(user.getNickname());
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        Assertions.assertTrue(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when user is already in the registered list
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when user is already in the registered list")
+    @Test
+    public void testAddUserInEventInWaitingQueueWhenUserAlreadyInRegisteredList() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        User user = this.createValidFullUser(1L, "toto");
+        Event event = this.createValidEvent(
+                1L,
+                this.createValidFullGame(1L, "Le jeu"),
+                this.createValidFullUser(100L, "Bidulle"),
+                new Location(100L, "Paris", null, null, null));
+        tuple.setUuid(event.getUuid());
+        tuple.setNickname(user.getNickname());
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        event.addUser(user);
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
+    /**
+     * Test method addUserInEventInWaitingQueue when user is already in the waiting list
+     */
+    @DisplayName("Test addUserInEventInWaitingQueue : when user is already in the waiting list")
+    @Test
+    public void testAddUserInEventInWaitingQueueWhenUserAlreadyInWaitingList() {
+        EventAddUserDTO tuple = new EventAddUserDTO();
+        User user = this.createValidFullUser(1L, "toto");
+        Event event = this.createValidEvent(
+                1L,
+                this.createValidFullGame(1L, "Le jeu"),
+                this.createValidFullUser(100L, "Bidulle"),
+                new Location(100L, "Paris", null, null, null));
+        tuple.setUuid(event.getUuid());
+        tuple.setNickname(user.getNickname());
+        BDDMockito.when(this.repository.findByUuid(event.getUuid())).thenReturn(Optional.of(event));
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        event.addUserInWaitingQueue(user);
+        Assertions.assertFalse(this.service.addUserInEventInWaitingQueue(tuple));
+    }
+
 
     // TODO test services for removing
+
 }
