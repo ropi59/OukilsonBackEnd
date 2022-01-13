@@ -40,12 +40,4 @@ public class GameService {
         );
         return result;
     }
-
-    public Optional<GameDTO> displayByUuid(String uuid) throws NoSuchElementException {
-        Optional<Game> game = this.repository.findByUuid(uuid);
-        return Optional.of(mapper.map(game.get(), GameDTO.class));
-    }
-
-
-
 }
