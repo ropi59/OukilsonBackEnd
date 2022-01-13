@@ -162,7 +162,7 @@ public class EventControllerTest {
     public void testFindAllByFiltersWhenNoParamGiven() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .get(route+"/search")
+                        .post(route+"/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(new EventSearchDTO())))
@@ -201,7 +201,7 @@ public class EventControllerTest {
         // Send request
         Gson gson = this.getInitializedGSON();
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .get(route + "/search")
+                        .post(route + "/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(searchDTO2)))
@@ -246,7 +246,7 @@ public class EventControllerTest {
         // Send request
         Gson gson = this.getInitializedGSON();
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .get(route + "/search")
+                        .post(route + "/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(searchDTO3)))
@@ -291,7 +291,7 @@ public class EventControllerTest {
         // Send request
         Gson gson = this.getInitializedGSON();
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .get(route + "/search")
+                        .post(route + "/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(searchDTO1)))
