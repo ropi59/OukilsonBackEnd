@@ -30,15 +30,8 @@ public class GameController {
         return result;
     }
 
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<GameUuidDTO>> findByName(@PathVariable String name) {
-        List<GameUuidDTO> gameUuidDTO = service.findByName(name);
-        if (gameUuidDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body(gameUuidDTO);
+    @PostMapping
+    public ResponseEntity<List<GameUuidDTO>> findByName(@RequestBody GameUuidDTO game) {
+        return ResponseEntity.ok().body(service.findByName(game));
     }
-
-
-
 }
