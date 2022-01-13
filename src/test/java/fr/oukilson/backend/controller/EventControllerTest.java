@@ -659,6 +659,189 @@ public class EventControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
     }
 
+    // Method removeUserInEvent
 
-    // TODO test routes for removing
+    /**
+     * Test removeUserInEvent with a null body
+     */
+    @DisplayName("Test removeUserInEvent : null body")
+    @Test
+    public void testRemoveUserInEventWithNullValue() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test removeUserInEvent with a null user's name
+     */
+    @DisplayName("Test removeUserInEvent : null user's name")
+    @Test
+    public void testRemoveUserInEventWithNullUserName() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test removeUserInEvent with a null event's uuid
+     */
+    @DisplayName("Test removeUserInEvent : null event's uuid")
+    @Test
+    public void testRemoveUserInEventWithNullEventUuid() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test removeUserInEvent when everything is ok
+     */
+    @DisplayName("Test removeUserInEvent : everything is ok")
+    @Test
+    public void testRemoveUserInEvent() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(true);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(true));
+    }
+
+    /**
+     * Test removeUserInEvent when game or user is not found
+     */
+    @DisplayName("Test removeUserInEvent : game or user not found")
+    @Test
+    public void testRemoveUserInEventUnknownElementInDatabase() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(false);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    // Method removeUserInWaitingQueue
+
+    /**
+     * Test removeUserInWaitingQueue with a null body
+     */
+    @DisplayName("Test removeUserInWaitingQueue : null body")
+    @Test
+    public void tesRemoveUserInWaitingQueueWithNullValue() throws Exception {
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test removeUserInWaitingQueue with a null user's name
+     */
+    @DisplayName("Test removeUserInWaitingQueue : null user's name")
+    @Test
+    public void testRemoveUserInWaitingQueueWithNullUserName() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue with a null event's uuid
+     */
+    @DisplayName("Test removeUserInWaitingQueue : null event's uuid")
+    @Test
+    public void testRemoveUserInWaitingQueueWithNullEventUuid() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when everything is ok
+     */
+    @DisplayName("Test removeUserInWaitingQueue : everything is ok")
+    @Test
+    public void testRemoveUserInWaitingQueue() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito
+                .when(this.service.removeUserInWaitingQueue(ArgumentMatchers.any(EventRemoveUserDTO.class)))
+                .thenReturn(true);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(true));
+    }
+
+    /**
+     * Test removeUserInWaitingQueue when game or user is not found
+     */
+    @DisplayName("Test removeUserInWaitingQueue : game or user not found")
+    @Test
+    public void testRemoveUserInWaitingQueueUnknownElementInDatabase() throws Exception {
+        EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", "Toto");
+        Mockito
+                .when(this.service.removeUserInWaitingQueue(ArgumentMatchers.any(EventRemoveUserDTO.class)))
+                .thenReturn(false);
+        Gson gson = this.getInitializedGSON();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route+"/remove_user/waiting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isBoolean())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(false));
+    }
 }
