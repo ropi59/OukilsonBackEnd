@@ -30,16 +30,6 @@ public class GameController {
         return result;
     }
 
-    @GetMapping("/display/{uuid}")
-    public ResponseEntity<GameDTO> displayByUuid(@PathVariable String uuid) {
-        try {
-            Optional<GameDTO> gameDTO = this.service.displayByUuid(uuid);
-            return ResponseEntity.ok(gameDTO.get());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().header(e.getMessage()).build();
-        }
-    }
-
     @GetMapping("/name/{name}")
     public ResponseEntity<List<GameUuidDTO>> findByName(@PathVariable String name) {
         List<GameUuidDTO> gameUuidDTO = service.findByName(name);
