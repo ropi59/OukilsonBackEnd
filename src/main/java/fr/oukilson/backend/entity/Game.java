@@ -12,14 +12,19 @@ import javax.persistence.*;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String uuid;
-    private String name;
-    private int minPlayer;
-    private int maxPlayer;
-    // Duration in minutes
-    private int minPlayingTime;
-    private int maxPlayingTime;
-    private int minAge;
-    private String creatorName;
+    private Long id;                    // DB id
+    private String uuid;                // String uuid to access from the client
+    private String name;                // Game's name
+    @Column(name = "min_player")
+    private int minPlayer;          // Minimal number of players
+    @Column(name = "max_player")
+    private int maxPlayer;          // Maximal number of players
+    @Column(name = "min_time")
+    private int minPlayingTime;     // Average minimal time for a party
+    @Column(name = "max_time")
+    private int maxPlayingTime;     // Average maximal time for a party
+    @Column(name = "min_age")
+    private int minAge;             // Recommended minimal age to play
+    @Column(name = "creator_name")
+    private String creatorName;         // Creator's name of the game
 }
