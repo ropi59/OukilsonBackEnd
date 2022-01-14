@@ -1,20 +1,7 @@
-# Server Conf
-
-server:
-  port: 8080
-
-# Spring conf
 spring:
-  # App conf
-  application:
-    name: api
-  # Mysql conf
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/oukilson
     username: root
     password: root
-  # Jpa conf
-  jpa:
-    hibernate:
-      ddl-auto: update
 
