@@ -1,4 +1,4 @@
-package fr.oukilson.backend.configurations;
+package fr.oukilson.backend.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -1,8 +1,8 @@
-package fr.oukilson.backend.services;
+package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dtos.GameDTO;
-import fr.oukilson.backend.dtos.GameUuidDTO;
-import fr.oukilson.backend.entities.Game;
+import fr.oukilson.backend.dto.GameDTO;
+import fr.oukilson.backend.dto.GameUuidDTO;
+import fr.oukilson.backend.entity.Game;
 import fr.oukilson.backend.repository.GameRepository;
 import org.modelmapper.ModelMapper;
 import java.util.*;

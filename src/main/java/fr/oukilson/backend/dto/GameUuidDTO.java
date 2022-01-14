@@ -1,4 +1,4 @@
-package fr.oukilson.backend.dtos;
+package fr.oukilson.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

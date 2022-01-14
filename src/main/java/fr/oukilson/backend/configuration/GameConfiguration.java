@@ -1,7 +1,7 @@
-package fr.oukilson.backend.configurations;
+package fr.oukilson.backend.configuration;
 
 import fr.oukilson.backend.repository.GameRepository;
-import fr.oukilson.backend.services.GameService;
+import fr.oukilson.backend.service.GameService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

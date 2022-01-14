@@ -1,8 +1,8 @@
 package fr.oukilson.backend.controller;
 
-import fr.oukilson.backend.dtos.GameDTO;
-import fr.oukilson.backend.dtos.GameUuidDTO;
-import fr.oukilson.backend.services.GameService;
+import fr.oukilson.backend.dto.GameDTO;
+import fr.oukilson.backend.dto.GameUuidDTO;
+import fr.oukilson.backend.service.GameService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

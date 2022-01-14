@@ -1,26 +1,19 @@
-package fr.oukilson.backend.entities;
+package fr.oukilson.backend.dto;
 
-import lombok.*;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "game")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Game {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class GameDTO {
     private String uuid;
     private String name;
     private Integer minPlayer;
     private Integer maxPlayer;
-    // Duration in minutes
     private Integer minTime;
     private Integer maxTime;
     private Integer minAge;
     private String creatorName;
-
 }
