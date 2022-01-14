@@ -35,9 +35,11 @@ public class GameService {
      */
     public List<GameUuidDTO> findByName(GameUuidDTO game) {
         List<GameUuidDTO> result = new LinkedList<>();
-        repository.findAllByNameContaining(game.getName()).forEach(
-                g -> result.add(this.mapper.map(g, GameUuidDTO.class))
-        );
+        if (game!=null && game.getName()!=null) {
+            repository.findAllByNameContaining(game.getName()).forEach(
+                    g -> result.add(this.mapper.map(g, GameUuidDTO.class))
+            );
+        }
         return result;
     }
 }
