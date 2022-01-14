@@ -2,13 +2,15 @@ package fr.oukilson.backend.entity;
 
 import lombok.*;
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
-@Table(name = "game")
+@Table(name="game")
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +29,7 @@ public class Game {
     private int minAge;             // Recommended minimal age to play
     @Column(name = "creator_name")
     private String creatorName;         // Creator's name of the game
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
+    List<Event> events = new LinkedList<>();
 }
