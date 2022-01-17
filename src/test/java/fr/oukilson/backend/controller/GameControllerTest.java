@@ -14,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -171,7 +170,6 @@ public class GameControllerTest {
     public void testFindByNameNoResultFound() throws Exception {
         String name = "o";
         BDDMockito.when(this.service.findByName(name)).thenReturn(new LinkedList<>());
-        Gson gson = new Gson();
         this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
@@ -184,9 +182,7 @@ public class GameControllerTest {
     @DisplayName("Test findByName : empty search string")
     @Test
     public void testFindByNameWithEmptySearchString() throws Exception {
-        GameUuidDTO data = new GameUuidDTO("", "");
         String name = "";
-        Gson gson = new Gson();
         this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
