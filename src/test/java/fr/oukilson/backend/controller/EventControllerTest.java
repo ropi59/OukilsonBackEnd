@@ -549,7 +549,7 @@ public class EventControllerTest {
     public void testAddUserInEventWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -565,7 +565,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -583,7 +583,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -602,7 +602,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -621,7 +621,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -640,7 +640,7 @@ public class EventControllerTest {
     public void testAddUserInEventInWaitingQueueWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -656,7 +656,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -674,7 +674,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -693,7 +693,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -712,7 +712,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -731,7 +731,7 @@ public class EventControllerTest {
     public void testRemoveUserInEventWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -747,7 +747,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -765,7 +765,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -784,7 +784,7 @@ public class EventControllerTest {
         Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -803,7 +803,7 @@ public class EventControllerTest {
         Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -822,7 +822,7 @@ public class EventControllerTest {
     public void tesRemoveUserInWaitingQueueWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -838,7 +838,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -856,7 +856,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -877,7 +877,7 @@ public class EventControllerTest {
                 .thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -898,7 +898,7 @@ public class EventControllerTest {
                 .thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
