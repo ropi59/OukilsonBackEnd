@@ -34,11 +34,11 @@ public class GameController {
 
     /**
      * Get all the games sharing the same name or at least a part of it.
-     * @param game GameUuidDTO containing the string to look up in the 'name' attribute
+     * @param name The string to search
      * @return A list of GameDTO
      */
-    @PostMapping
-    public ResponseEntity<List<GameUuidDTO>> findByName(@RequestBody GameUuidDTO game) {
-        return ResponseEntity.ok().body(service.findByName(game));
+    @GetMapping("/search")
+    public ResponseEntity<List<GameUuidDTO>> findByName(@RequestParam(name = "name") String name) {
+        return ResponseEntity.ok().body(service.findByName(name));
     }
 }
