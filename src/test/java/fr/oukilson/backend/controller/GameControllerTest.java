@@ -107,22 +107,18 @@ public class GameControllerTest {
     @Test
     public void testFindByNameReturnResults() throws Exception {
         // Mocking
-        GameUuidDTO data = new GameUuidDTO("", "Jeux");
+        String name = "Jeux";
         List<GameUuidDTO> games = new LinkedList<>();
         ModelMapper mapper = new ModelMapper();
         int size = 3;
         for (int i=0; i<size; i++) {
             games.add(mapper.map(this.createValidFullGame((long) i, "Jeux n°"+i), GameUuidDTO.class));
         }
-        BDDMockito.when(this.service.findByName(data)).thenReturn(games);
+        BDDMockito.when(this.service.findByName(name)).thenReturn(games);
 
         // Send request
         Gson gson = new Gson();
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(data)))
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andReturn();
@@ -139,19 +135,44 @@ public class GameControllerTest {
     }
 
     /**
+     * Test findByName with special characters in the string to search
+     */
+    @DisplayName("Test findByName : special character in url")
+    @Test
+    public void testFindByNameSpecialCharInURL() throws Exception {
+        // Mock
+        String name = "Les échos de Fäfnir !";
+        List<GameUuidDTO> games = new LinkedList<>();
+        ModelMapper mapper = new ModelMapper();
+        games.add(mapper.map(this.createValidFullGame(1L, name), GameUuidDTO.class));
+        BDDMockito.when(this.service.findByName(name)).thenReturn(games);
+
+        // Request
+        Gson gson = new Gson();
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andReturn();
+
+        // Assert
+        GameUuidDTO[] resultDTO = gson.fromJson(
+                result.getResponse().getContentAsString(StandardCharsets.UTF_8),
+                GameUuidDTO[].class);
+        Assertions.assertNotNull(resultDTO);
+        Assertions.assertEquals(1, resultDTO.length);
+        Assertions.assertEquals(games.get(0), resultDTO[0]);
+    }
+
+    /**
      * Test findByName with the search gives no result
      */
     @DisplayName("Test findByName : no result found")
     @Test
     public void testFindByNameNoResultFound() throws Exception {
-        GameUuidDTO data = new GameUuidDTO("", "o");
-        BDDMockito.when(this.service.findByName(data)).thenReturn(new LinkedList<>());
+        String name = "o";
+        BDDMockito.when(this.service.findByName(name)).thenReturn(new LinkedList<>());
         Gson gson = new Gson();
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(data)))
+        this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
@@ -164,12 +185,9 @@ public class GameControllerTest {
     @Test
     public void testFindByNameWithEmptySearchString() throws Exception {
         GameUuidDTO data = new GameUuidDTO("", "");
+        String name = "";
         Gson gson = new Gson();
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(data)))
+        this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search?name="+name))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());

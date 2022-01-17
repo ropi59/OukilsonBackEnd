@@ -108,8 +108,7 @@ public class GameServiceTest {
     @Test
     @DisplayName("Test findByName : null given name")
     public void testFindByNameNullName() {
-        GameUuidDTO dto = new GameUuidDTO();
-        List<GameUuidDTO> list = this.service.findByName(dto);
+        List<GameUuidDTO> list = this.service.findByName(null);
         Assertions.assertNotNull(list);
         Assertions.assertEquals(0, list.size());
     }
@@ -120,9 +119,9 @@ public class GameServiceTest {
     @Test
     @DisplayName("Test findByName : no result found")
     public void testFindByNameWithNoResultFound() {
-        GameUuidDTO dto = new GameUuidDTO(null, "7 Wonders");
-        BDDMockito.when(this.repository.findAllByNameContaining(dto.getName())).thenReturn(new LinkedList<>());
-        List<GameUuidDTO> list = this.service.findByName(dto);
+        String name = "7 Wonders";
+        BDDMockito.when(this.repository.findAllByNameContaining(name)).thenReturn(new LinkedList<>());
+        List<GameUuidDTO> list = this.service.findByName(name);
         Assertions.assertNotNull(list);
         Assertions.assertEquals(0, list.size());
     }
@@ -133,14 +132,14 @@ public class GameServiceTest {
     @Test
     @DisplayName("Test findByName : result found")
     public void testFindByNameWithResultFound() {
-        GameUuidDTO dto = new GameUuidDTO(null, "7 Wonders");
+        String name = "7 Wonders";
         List<Game> games = new LinkedList<>();
         int size = 4;
         for (int i=0; i<size; i++) {
             games.add(this.createValidFullGame((long) i, "Jeux n°"+i));
         }
-        BDDMockito.when(this.repository.findAllByNameContaining(dto.getName())).thenReturn(games);
-        List<GameUuidDTO> list = this.service.findByName(dto);
+        BDDMockito.when(this.repository.findAllByNameContaining(name)).thenReturn(games);
+        List<GameUuidDTO> list = this.service.findByName(name);
         Assertions.assertNotNull(list);
         Assertions.assertEquals(size, list.size());
         for (int i=0; i<size; i++) {
