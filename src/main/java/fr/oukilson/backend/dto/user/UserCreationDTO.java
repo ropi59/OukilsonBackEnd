@@ -1,4 +1,4 @@
-package fr.oukilson.backend.dto;
+package fr.oukilson.backend.dto.user;
 
 import lombok.*;
 import javax.validation.constraints.NotNull;
