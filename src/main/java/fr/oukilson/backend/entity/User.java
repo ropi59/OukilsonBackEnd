@@ -1,59 +1,57 @@
 package fr.oukilson.backend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.Hibernate;
-
+import lombok.*;
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name="user")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String password;
-    private String email;
-    private String nickname;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    private Long id;                    // DB id
+    private String nickname;            // Unique username; also used to access from the client
+    private String password;            // Encrypted version of the password
+    private String email;               // Email of the user
+    @Column(name = "first_name")
+    private String firstName;           // First name of the user
+    @Column(name = "last_name")
+    private String lastName;            // Last name of the user
+
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "friend_list",
-    joinColumns = @JoinColumn(name = "user_id"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    private List<User> friendList;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    private List<User> friendList = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "denied_list",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "denied_id"))
-    private List<User> deniedList;
-
-    public User() {
-    }
-
-    public User(Long id, String password, String email, String nickname) {
-        this.id = id;
-        this.password = password;
-        this.email = email;
-        this.nickname = nickname;
-        this.friendList = new ArrayList<>();
-        this.deniedList = new ArrayList<>();
-
-    }
+    private List<User> deniedList = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
-        return id != null && Objects.equals(id, user.id);
+
+        if (!id.equals(user.id)) return false;
+        if (!nickname.equals(user.nickname)) return false;
+        if (!password.equals(user.password)) return false;
+        if (!email.equals(user.email)) return false;
+        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
+        return lastName != null ? lastName.equals(user.lastName) : user.lastName == null;
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return id.hashCode();
     }
 }
