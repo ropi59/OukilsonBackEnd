@@ -1,28 +1,19 @@
 package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dto.UserCreationDTO;
-import fr.oukilson.backend.dto.ResponseDTO;
-import fr.oukilson.backend.dto.UserDTO;
-import fr.oukilson.backend.entity.RegexCollection;
+import fr.oukilson.backend.dto.user.UserCreationDTO;
+import fr.oukilson.backend.dto.user.UserDTO;
+import fr.oukilson.backend.model.RegexCollection;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import java.util.*;
 
-@Service
 @RequiredArgsConstructor
 public class UserService {
-
-    /*
-     * declares the singleton repository as well as the mapper bean as attributes & injects them
-     */
     private UserRepository userRepository;
     private ModelMapper modelMapper;
     private RegexCollection regexCollection;
-
 
     public UserService(UserRepository userRepository, ModelMapper modelMapper, RegexCollection regexCollection) {
         this.userRepository = userRepository;
@@ -30,130 +21,95 @@ public class UserService {
         this.regexCollection = regexCollection;
     }
 
-
-    /*
-    basic get methods for testing purposes
-     */
-    public UserDTO findById(Long id) {
-        Optional<User> user = this.userRepository.findById(id);
-        UserDTO userDTO = null;
-        if (user.isPresent())
-            userDTO = this.modelMapper.map(user.get(), UserDTO.class);
-        return userDTO;
-    }
-
-    public List<UserDTO> findAll() {
-        List<UserDTO> list = new ArrayList<>();
-        this.userRepository.findAll().forEach(user ->
-                list.add(this.modelMapper.map(user, UserDTO.class)));
-        return list;
-    }
-
     /**
-     * method to save a user entity to the database
-     * @param userCreationDTO the DTO extracted from the body
-     * @return a ResponseDTO
+     * Method to save a user entity to the database
+     * @param userCreationDTO User's data
+     * @return UserDTO
      */
-    public ResponseDTO createUser(UserCreationDTO userCreationDTO) {
-        // checks if input is valid then map into an entity to save it to the database
+    public UserDTO createUser(UserCreationDTO userCreationDTO) {
+        UserDTO result = null;
         if(this.regexCollection.getEmailPattern().matcher(userCreationDTO.getEmail()).find()
                 && this.regexCollection.getNicknamePattern().matcher(userCreationDTO.getNickname()).find()) {
-            this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
-            return new ResponseDTO(true, "User was successfully created");
+            User user = this.userRepository.save(this.modelMapper.map(userCreationDTO, User.class));
+            result = this.modelMapper.map(user, UserDTO.class);
         }
-        else {
-            return new ResponseDTO(false, "User was not created");
-        }
+        return result;
     }
 
     /**
-     * adds a user to the main user's friend list
-     * @param mainUserId Long
-     * @param secondUserId Long
-     * @return a response saying whether the user was successfully added or not
+     * Add a user to the main user's friend list
+     * @param mainUser User (nickname) to alter the friend list
+     * @param secondUser User (nickname) to add
+     * @return True if the adding has been done
      */
-    public ResponseDTO addUserToFriendList(Long mainUserId, Long secondUserId) {
-        // attempts to find both users on the database
-        Optional<User> mainUser = this.userRepository.findById(mainUserId);
-        Optional<User> userToAdd = this.userRepository.findById(secondUserId);
-        // create a default response
-        ResponseDTO responseDTO = new ResponseDTO(false, "User was already on list");
-        // check if users were found
-        if (mainUser.isEmpty() || userToAdd.isEmpty())
-            // modifies the response message
-            responseDTO.setMessage("User(s) not found");
-            // checks if users are different
-        else if (mainUser.equals(userToAdd))
-            responseDTO.setMessage("You cannot befriend yourself");
-        else {
-            // checks if the user to add was already on the list
-            if (!mainUser.get().getFriendList().contains(userToAdd.get())) {
-                // adds it
-                mainUser.get().getFriendList().add(userToAdd.get());
-                // modifies the main user object so that it can be saved into the database
-                // and modifies the response message accordingly
-                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-                responseDTO.setMessage("User was successfully added to the list");
-                responseDTO.setSuccess(true);
+    public boolean addUserToFriendList(String mainUser, String secondUser) {
+        boolean result;
+        Optional<User> myOptionalUser = this.userRepository.findByNickname(mainUser);
+        if (myOptionalUser.isPresent()) {
+            Optional<User> myOptionalFriend = this.userRepository.findByNickname(secondUser);
+            if (myOptionalFriend.isPresent()) {
+                User myUser = myOptionalUser.get();
+                List<User> friends = myUser.getFriendList();
+                User myFriend = myOptionalFriend.get();
+                if (!friends.contains(myFriend)) {
+                    friends.add(myFriend);
+                    this.userRepository.save(myUser);
+                    result = true;
+                }
+                else
+                    result = false;
             }
+            else
+                result = false;
         }
-        return responseDTO;
+        else
+            result = false;
+        return result;
     }
 
     /**
-     * remove a user from a friend list
-     * @param id1 Long
-     * @param id2 Long
-     * @return a DTO containing a boolean and a message
+     * Remove a user from a friend list
+     * @param mainUser The user (nickname) to alter his friend list
+     * @param secondUser The user's nickname to remove
+     * @return True if the removing has been done
      */
-    public ResponseDTO removeUserFromFriendList(Long id1, Long id2) {
-        // attempts to find both users by id
-        Optional<User> mainUser = this.userRepository.findById(id1);
-        Optional<User> userToRemove = this.userRepository.findById(id2);
-        // creates a default response
-        ResponseDTO responseDTO = new ResponseDTO(false, "User was not found on list");
-        // checks if users were found and modifies the message if needed
-        if (mainUser.isEmpty() || userToRemove.isEmpty())
-            responseDTO.setMessage("User not found");
-        else {
-            // check if second user is actually on the first user's friend list
-            if (mainUser.get().getFriendList().contains(userToRemove.get())) {
-                // removes unwanted user, maps main user so that it can be saved, modifies the response
-                mainUser.get().getFriendList().remove(userToRemove.get());
-                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-                responseDTO.setSuccess(true);
-                responseDTO.setMessage("User was successfully removed from list");
+    public boolean removeUserFromFriendList(String mainUser, String secondUser) {
+        boolean result;
+        Optional<User> myOptionalUser = this.userRepository.findByNickname(mainUser);
+        if (myOptionalUser.isPresent()) {
+            Optional<User> myOptionalFriend = this.userRepository.findByNickname(secondUser);
+            if (myOptionalFriend.isPresent()) {
+                User myUser = myOptionalUser.get();
+                User myFriend = myOptionalFriend.get();
+                myUser.getFriendList().remove(myFriend);
+                this.userRepository.save(myUser);
+                result = true;
             }
+            else
+                result = false;
         }
-        return responseDTO;
+        else
+            result = false;
+        return result;
     }
 
     /**
-     * function that empties a friend list
-     * @param id Long
-     * @return a response containing a boolean for success/failure and a message
+     * Empty a friend list
+     * @param nickname The user (nickname) to empty his friend list
+     * @return True if successfully emptied
      */
-    public ResponseDTO emptyFriendList(Long id) {
-        // attempts to find the user
-        Optional<User> user = this.userRepository.findById(id);
-        // creating a default response
-        ResponseDTO response = new ResponseDTO(false, "Failed to empty list");
-        // checks if the user was found and modifies the message accordingly
-        if (user.isEmpty())
-            response.setMessage("User not found");
-        // empties the friend list of the user then saves the user into the database then modifies the response
-        else {
-            // creates an iterator so that we can modify the list(remove elements) while iterating over it
-            Iterator<User> iterator = user.get().getFriendList().iterator();
-            while (iterator.hasNext()){
-                iterator.next();
-                iterator.remove();
-            }
-            this.userRepository.save(this.modelMapper.map(user.get(), User.class));
-            response.setSuccess(true);
-            response.setMessage("List successfully emptied");
+    public boolean emptyFriendList(String nickname) {
+        boolean result;
+        Optional<User> myOptionalUser = this.userRepository.findByNickname(nickname);
+        if (myOptionalUser.isPresent()) {
+            User myUser = myOptionalUser.get();
+            myUser.getFriendList().clear();
+            this.userRepository.save(myUser);
+            result = true;
         }
-        return response;
+        else
+            result = false;
+        return result;
     }
 
     public UserDTO update(UserDTO userDTO) {
