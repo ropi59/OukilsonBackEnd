@@ -88,7 +88,7 @@ public class EventService {
     }
 
     /**
-     * Uppdate an existing event.
+     * Update an existing event.
      * @param toUpdate The event to update
      * @return The updated event
      */
@@ -128,17 +128,28 @@ public class EventService {
      * Search for events by one of this two options :
      * - date after the provided date
      * - happening in a town
-     * If both filters are used, the date will be default choice
-     * @param toSearch EventSearchDTO
+     * If both filters are used, the date will be default choice.
+     * @param date Date in a string format
+     * @param town Town's name
      * @return List<EventDTO>
      */
-    public List<EventDTO> findByFilter(EventSearchDTO toSearch) {
+    public List<EventDTO> findByFilter(String date, String town) {
         // Get events
         List<Event> events;
-        if (toSearch.getStartingDate() != null) {
-            events = this.repository.findAllByStartingDateAfter(toSearch.getStartingDate());
-        } else if (toSearch.getTown() != null) {
-            events = this.repository.findAllByLocationTown(toSearch.getTown());
+        if (date!=null) {
+            LocalDateTime pointInTime;
+            try {
+                pointInTime = LocalDateTime.parse(date);
+                events = this.repository.findAllByStartingDateAfter(pointInTime);
+            }
+            catch (Exception e) {
+                if (town!=null)
+                    events = this.repository.findAllByLocationTown(town);
+                else
+                    events = new ArrayList<>();
+            }
+        } else if (town!=null) {
+            events = this.repository.findAllByLocationTownContaining(town);
         } else
             events = new ArrayList<>();
 
