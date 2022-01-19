@@ -4,12 +4,10 @@ import fr.oukilson.backend.entity.RegexCollection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.regex.Pattern;
 
 @Configuration
 public class RegexConfiguration {
-
     @Bean
     public RegexCollection regexCollection(@Value("${environment.emailRegex}") String emailPattern,
                                            @Value("${environment.nicknameRegex}") String nicknamePattern,
@@ -17,5 +15,4 @@ public class RegexConfiguration {
         return new RegexCollection(Pattern.compile(emailPattern),Pattern.compile(nicknamePattern),
                 Pattern.compile(namePattern));
     }
-
 }
