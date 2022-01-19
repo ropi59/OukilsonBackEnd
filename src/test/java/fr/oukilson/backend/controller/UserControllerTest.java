@@ -1,15 +1,23 @@
 package fr.oukilson.backend.controller;
 
+import com.google.gson.Gson;
+import fr.oukilson.backend.dto.user.UserCreationDTO;
+import fr.oukilson.backend.dto.user.UserDTO;
 import fr.oukilson.backend.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
@@ -20,6 +28,123 @@ public class UserControllerTest {
     private final String route = "/users";
 
     // Method createUser
+
+    /**
+     * Test createUser with a null body
+     */
+    @DisplayName("Test createUser : null body")
+    @Test
+    public void testCreateUserNullBody() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.post(route))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test createUser with a null password
+     */
+    @DisplayName("Test createUser : null password")
+    @Test
+    public void testCreateUserNullPassword() throws Exception {
+        UserCreationDTO body = new UserCreationDTO("Toupie", null, "hibiscus@george.fr");
+        Gson gson = new Gson();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test createUser with a null nickname
+     */
+    @DisplayName("Test createUser : null nickname")
+    @Test
+    public void testCreateUserNullNickname() throws Exception {
+        UserCreationDTO body = new UserCreationDTO(null, "sdfghjklmmdj", "hibiscus@george.fr");
+        Gson gson = new Gson();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test createUser with a null email
+     */
+    @DisplayName("Test createUser : null email")
+    @Test
+    public void testCreateUserNullEmail() throws Exception {
+        UserCreationDTO body = new UserCreationDTO("Toupie", "sdfghjklmmdj", null);
+        Gson gson = new Gson();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test createUser when the user creation on the service failed
+     */
+    @DisplayName("Test createUser : user creation failed")
+    @Test
+    public void testCreateUserUserCreationFailed() throws Exception {
+        UserCreationDTO body = new UserCreationDTO("Toupie", "sdfghjklmmdj", "hibiscus@george.fr");
+        Mockito.when(this.service.createUser(body)).thenReturn(null);
+        Gson gson = new Gson();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Test createUser when the user creation on the service is successful
+     */
+    @DisplayName("Test createUser : user creation successful")
+    @Test
+    public void testCreateUserUserCreationSuccess() throws Exception {
+        UserCreationDTO body = new UserCreationDTO("Toupie", "sdfghjklmmdj", "hibiscus@george.fr");
+        UserDTO userDTO = new UserDTO("Toupie", new LinkedList<>());
+        Mockito.when(this.service.createUser(body)).thenReturn(userDTO);
+        Gson gson = new Gson();
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+
+        UserDTO resultDTO = gson.fromJson(
+                result.getResponse().getContentAsString(StandardCharsets.UTF_8),
+                UserDTO.class);
+        Assertions.assertNotNull(resultDTO);
+        Assertions.assertEquals(userDTO, resultDTO);
+    }
+
+    /**
+     * Test createUser when the user creation on the service throw an exception
+     */
+    @DisplayName("Test createUser : user creation throws an exception")
+    @Test
+    public void testCreateUserUserCreationThrowException() throws Exception {
+        UserCreationDTO body = new UserCreationDTO("Toupie", "sdfghjklmmdj", "hibiscus@george.fr");
+        Mockito.when(this.service.createUser(body)).thenThrow(Exception.class);
+        Gson gson = new Gson();
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .post(route)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(gson.toJson(body)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 
     // Method addUserToFriendList
 
