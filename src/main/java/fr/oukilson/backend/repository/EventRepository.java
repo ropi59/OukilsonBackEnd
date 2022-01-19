@@ -12,5 +12,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByUuid(String uuid);
     List<Event> findAllByStartingDateAfter(LocalDateTime date);
     List<Event> findAllByLocationTown(String town);
+    List<Event> findAllByLocationTownContaining(String town);
     void deleteByUuid(String uuid);
 }
