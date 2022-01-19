@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class UserCreationDTO {
     @NotNull
+    private String nickname;
+    @NotNull
     private String password;
     @NotNull
     private String email;
-    @NotNull
-    private String nickname;
 }
