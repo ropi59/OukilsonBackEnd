@@ -112,8 +112,4 @@ public class UserService {
             result = false;
         return result;
     }
-
-    public UserDTO update(UserDTO userDTO) {
-        return this.modelMapper.map(this.userRepository.save(this.modelMapper.map(userDTO, User.class)), UserDTO.class);
-    }
 }
