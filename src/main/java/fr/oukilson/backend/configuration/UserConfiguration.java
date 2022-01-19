@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class UserConfiguration {
-
     @Bean
     public UserService userService(UserRepository userRepository, ModelMapper modelMapper,
                                    RegexCollection regexCollection){
