@@ -279,4 +279,7 @@ public class UserControllerTest {
         Assertions.assertEquals(userDTO().getId(), mainUserID.getValue());
         Assertions.assertEquals(secondUserDTO().getId(), secondUserID.getValue());
     }
+
+    //////////// TESTING THE EMPTYLIST FUNCTION /////////////////
+
 }

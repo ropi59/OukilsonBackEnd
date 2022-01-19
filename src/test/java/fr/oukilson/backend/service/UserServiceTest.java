@@ -6,14 +6,17 @@ import fr.oukilson.backend.dto.UserDTO;
 import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.repository.UserRepository;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -25,17 +28,22 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
-    @InjectMocks
     private UserService userService;
 
     @Mock
     UserRepository userRepository;
 
-    @Mock
+    @Autowired
     ModelMapper modelMapper;
 
-    @Mock
+    @Autowired
     RegexCollection regexCollection;
+
+
+    @BeforeAll
+    public void init(){
+        this.userService = new UserService(userRepository, modelMapper, regexCollection);
+    }
 
     public UserCreationDTO userCreationDTO(){
         return new UserCreationDTO("password", "hello@example.com", "nickname");
