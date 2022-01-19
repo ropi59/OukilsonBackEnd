@@ -1,408 +1,175 @@
 package fr.oukilson.backend.service;
 
-import fr.oukilson.backend.dto.ResponseDTO;
-import fr.oukilson.backend.dto.UserCreationDTO;
-import fr.oukilson.backend.dto.UserDTO;
-import fr.oukilson.backend.entity.RegexCollection;
 import fr.oukilson.backend.entity.User;
+import fr.oukilson.backend.model.RegexCollection;
 import fr.oukilson.backend.repository.UserRepository;
-import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
-import org.junit.jupiter.api.Assertions;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Iterator;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserServiceTest {
-
-    private UserService userService;
-
-    @Mock
-    UserRepository userRepository;
-
+    @MockBean
+    private UserRepository userRepository;
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    RegexCollection regexCollection;
-
+    private RegexCollection regexCollection;
+    private UserService service;
 
     @BeforeAll
-    public void init(){
-        this.userService = new UserService(userRepository, modelMapper, regexCollection);
+    public void init() {
+        service = new UserService(userRepository, new ModelMapper(), regexCollection);
     }
 
-    public UserCreationDTO userCreationDTO(){
-        return new UserCreationDTO("password", "hello@example.com", "nickname");
-    }
+    // Method createUser
 
-    public UserCreationDTO userCreationDTOInvalid(){
-        return new UserCreationDTO("password", "e.com", "nickname");
-    }
 
-    public User user(){
-        return new User(1L, "password", "hello@example.com", "nickname");
-    }
 
-    public User otherUser(){
-        return new User(2L, "password2", "hello2@email.com", "nickname2");
-    }
 
-    public ResponseDTO responseDTOInvalid(){
-        return new ResponseDTO(false, "failure");
+    // Method addUserToFriendList
+
+
+
+
+    // Method removeUserFromFriendList
+
+    /**
+     * Test removeUserFromFriendList when mainUser is null
+     */
+    @DisplayName("Test removeUserFromFriendList : mainUser is null")
+    @Test
+    public void testRemoveUserFromFriendListNullMainUser() {
+        BDDMockito.when(userRepository.findByNickname(null)).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> this.service.removeUserFromFriendList(null, "Machin"));
     }
 
     /**
-     * tests the create user function
-     * create a response to compare the result to
-     * tell the test what to expect and verify the result
+     * Test removeUserFromFriendList when secondUser is null
      */
+    @DisplayName("Test removeUserFromFriendList : secondUser is null")
     @Test
-    public void testCreateUser_AssertTrue() {
-        when(userRepository.save(any(User.class))).thenReturn(user());
-        ResponseDTO newResponseDTO = userService.createUser(userCreationDTO());
-        Assertions.assertTrue(newResponseDTO.isSuccess());
-//        verify(userRepository).save(user());
-    }
-
-    @Test
-    public void testCreateUser_AssertFalse(){
-        when(userRepository.save(any(User.class))).thenReturn(user());
-        ResponseDTO newResponseDTO = userService.createUser(userCreationDTOInvalid());
-        Assertions.assertFalse(newResponseDTO.isSuccess());
-    }
-
-    @Test
-    public void testCreateUser(){
-        when(userRepository.save(any(User.class))).thenReturn(user());
-        userService.createUser(userCreationDTO());
-        verify(userRepository, times(1)).save(any());
+    public void testRemoveUserFromFriendListNullSecondUser() {
+        User mainUser = new User();
+        mainUser.setNickname("Pouic");
+        BDDMockito.when(userRepository.findByNickname(mainUser.getNickname())).thenReturn(Optional.of(mainUser));
+        BDDMockito.when(userRepository.findByNickname(null)).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> this.service.removeUserFromFriendList(mainUser.getNickname(), null));
     }
 
     /**
-     * testing the business logic of the addUserToFriendList method
-     * expecting success
+     * Test removeUserFromFriendList when mainUser is not found
      */
+    @DisplayName("Test removeUserFromFriendList : mainUser is not found")
     @Test
-    public void testAddUserToFriendList(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-
-        if(mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("empty return");
-        else if(mainUser.equals(otherUser))
-            responseDTO.setMessage("adding user to user");
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
-                responseDTO.setSuccess(true);
-            }
-        }
-        Assertions.assertTrue(responseDTO.isSuccess());
-        Assertions.assertTrue(mainUser.get().getFriendList().size() > 0);
+    public void testRemoveUserFromFriendListMainUserNotFound() {
+        String nickname1 = "Radio";
+        String nickname2 = "Gaga";
+        BDDMockito.when(userRepository.findByNickname(nickname1)).thenReturn(Optional.empty());
+        Assertions.assertFalse(this.service.removeUserFromFriendList(nickname1, nickname2));
     }
 
     /**
-     * testing the business logic of the addUserToFriendList method
-     * expecting error
+     * Test removeUserFromFriendList when secondUser is not found
      */
+    @DisplayName("Test removeUserFromFriendList : secondUser is not found")
     @Test
-    public void testAddUserToFriendList_mainUserEmpty(){
-            ResponseDTO responseDTO = responseDTOInvalid();
-            when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
-            when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-            Optional<User> mainUser = this.userRepository.findById(1L);
-            Optional<User> otherUser = this.userRepository.findById(2L);
-            if(mainUser.isEmpty() || otherUser.isEmpty()) {
-                responseDTO.setMessage("empty return");
-            }
-            else if(mainUser.equals(otherUser)) {
-                responseDTO.setMessage("adding user to user");
-            }
-            else{
-                if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                    mainUser.get().getFriendList().add(otherUser.get());
-                    responseDTO.setSuccess(true);
-                }
-            }
-            Assertions.assertEquals(responseDTO.getMessage(), "empty return");
+    public void testRemoveUserFromFriendListSecondUserNotFound() {
+        String nickname1 = "Radio";
+        String nickname2 = "Gaga";
+        User user = new User();
+        user.setNickname(nickname1);
+        BDDMockito.when(userRepository.findByNickname(nickname1)).thenReturn(Optional.of(user));
+        BDDMockito.when(userRepository.findByNickname(nickname2)).thenReturn(Optional.empty());
+        Assertions.assertFalse(this.service.removeUserFromFriendList(nickname1, nickname2));
     }
 
     /**
-     * testing the business logic of the addUserToFriendList method
-     * expecting error
+     * Test removeUserFromFriendList when everything is ok
      */
+    @DisplayName("Test removeUserFromFriendList : user removed")
     @Test
-    public void testAddUserToFriendList_otherUserEmpty(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
+    public void testRemoveUserFromFriendListEverythingOk() {
+        // Populate the friend list
+        String nickname1 = "Radio";
+        String nickname2 = "Gaga";
+        User user1 = new User();
+        user1.setNickname(nickname1);
+        User user2 = new User();
+        user2.setNickname(nickname2);
+        user2.setId(1000L);
+        user1.getFriendList().add(user2);
+        int size = 3;
+        for (int i=0; i<size; i++) {
+            User temp = new User();
+            temp.setId((long)i);
+            temp.setNickname("User "+i);
+            user1.getFriendList().add(temp);
         }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
-                responseDTO.setSuccess(true);
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "empty return");
+
+        // Mock and assert
+        BDDMockito.when(userRepository.findByNickname(nickname1)).thenReturn(Optional.of(user1));
+        BDDMockito.when(userRepository.findByNickname(nickname2)).thenReturn(Optional.of(user2));
+        Assertions.assertEquals(size+1, user1.getFriendList().size());
+        Assertions.assertTrue(user1.getFriendList().contains(user2));
+        Assertions.assertTrue(this.service.removeUserFromFriendList(nickname1, nickname2));
+        Assertions.assertEquals(size, user1.getFriendList().size());
+        Assertions.assertFalse(user1.getFriendList().contains(user2));
+    }
+
+    // Method emptyFriendList
+
+    /**
+     * Test emptyFriendList with null nickname
+     */
+    @DisplayName("Test emptyFriendList : null nickname")
+    @Test
+    public void testEmptyFriendListNullNickname() {
+        BDDMockito.when(this.userRepository.findByNickname(null)).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(NullPointerException.class, () -> this.service.emptyFriendList(null));
     }
 
     /**
-     * testing the business logic of the addUserToFriendList method
-     * expecting error
+     * Test emptyFriendList when user is found
      */
+    @DisplayName("Test emptyFriendList : user not found")
     @Test
-    public void testAddUserToFriendList_mainUserEqualsOtherUser(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(user()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
-        }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
-                responseDTO.setSuccess(true);
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "adding user to user");
+    public void testEmptyFriendListUserIsFound() {
+        String nickname = "Alpha";
+        BDDMockito.when(this.userRepository.findByNickname(nickname)).thenReturn(Optional.empty());
+        Assertions.assertFalse(this.service.emptyFriendList(nickname));
     }
 
     /**
-     * testing the business logic of the addUserToFriendList method
-     * expecting error
+     * Test emptyFriendList when user is not found
      */
+    @DisplayName("Test emptyFriendList : user found, empty successful")
     @Test
-    public void testAddUserToFriendList_otherUserAlreadyOnList(){
-        ResponseDTO responseDTO = new ResponseDTO(false, "user already on list");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if (mainUser.isPresent() && otherUser.isPresent())
-            mainUser.get().getFriendList().add(otherUser.get());
-        if(mainUser.isEmpty() || otherUser.isEmpty()) {
-            responseDTO.setMessage("empty return");
+    public void testEmptyFriendListUserNotFound() {
+        String nickname = "Alpha";
+        User user = new User();
+        user.setNickname(nickname);
+        int size = 2;
+        for (int i=0; i<size; i++) {
+            User temp = new User();
+            temp.setId((long)i);
+            temp.setNickname("User "+i);
+            user.getFriendList().add(temp);
         }
-        else if(mainUser.equals(otherUser)) {
-            responseDTO.setMessage("adding user to user");
-        }
-        else{
-            if(!mainUser.get().getFriendList().contains(otherUser.get())){
-                mainUser.get().getFriendList().add(otherUser.get());
-                responseDTO.setSuccess(true);
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "user already on list");
-    }
-
-    // TESTING REMOVING A USER FROM ANOTHER USER'S LIST //
-    /**
-     * testing the business logic of the removeUserFromFriendList method
-     * expecting success
-     */
-    @Test
-    public void testRemoveUserFromFriendList(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if (mainUser.isPresent() && otherUser.isPresent())
-            mainUser.get().getFriendList().add(otherUser.get());
-        if (mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("User not found");
-        else {
-            if (mainUser.get().getFriendList().contains(otherUser.get())) {
-                mainUser.get().getFriendList().remove(otherUser.get());
-                responseDTO.setSuccess(true);
-                responseDTO.setMessage("User was successfully removed from list");
-            }
-        }
-        Assertions.assertTrue(responseDTO.isSuccess());
-        Assertions.assertEquals(0, mainUser.get().getFriendList().size());
-    }
-
-    /**
-     * testing the business logic of the removeUserFromFriendList method
-     * expecting error
-     */
-    @Test
-    public void testRemoveUserFromFriendList_mainUserEmpty(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if (mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("User not found");
-        else {
-            if (mainUser.get().getFriendList().contains(otherUser.get())) {
-                mainUser.get().getFriendList().remove(otherUser.get());
-                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-                responseDTO.setSuccess(true);
-                responseDTO.setMessage("User was successfully removed from list");
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "User not found");
-    }
-
-    /**
-     * testing the business logic of the removeUserFromFriendList method
-     * expecting error
-     */
-    @Test
-    public void testRemoveUserFromFriendList_otherUserEmpty(){
-        ResponseDTO responseDTO = responseDTOInvalid();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if (mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("User not found");
-        else {
-            if (mainUser.get().getFriendList().contains(otherUser.get())) {
-                mainUser.get().getFriendList().remove(otherUser.get());
-                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-                responseDTO.setSuccess(true);
-                responseDTO.setMessage("User was successfully removed from list");
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "User not found");
-    }
-
-    /**
-     * testing the business logic of the removeUserFromFriendList method
-     * expecting error
-     */
-    @Test
-    public void testRemoveUserFromFriendList_otherUserNotOnList(){
-        ResponseDTO responseDTO = new ResponseDTO(false, "user not on list");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        Optional<User> otherUser = this.userRepository.findById(2L);
-        if (mainUser.isEmpty() || otherUser.isEmpty())
-            responseDTO.setMessage("User not found");
-        else {
-            if (mainUser.get().getFriendList().contains(otherUser.get())) {
-                mainUser.get().getFriendList().remove(otherUser.get());
-                this.userRepository.save(this.modelMapper.map(mainUser.get(), User.class));
-                responseDTO.setSuccess(true);
-                responseDTO.setMessage("User was successfully removed from list");
-            }
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "user not on list");
-    }
-
-
-    // TESTING EMPTYING A USER'S FRIENDLIST //
-
-    /**
-     * testing the business logic of the remptyFriendList method
-     * expecting success
-     */
-    @Test
-    public void testEmptyFriendList(){
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user()));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        ResponseDTO responseDTO = responseDTOInvalid();
-        mainUser.ifPresent(user -> user.getFriendList().add(otherUser()));
-        if(mainUser.isEmpty())
-            responseDTO.setMessage("user not found");
-        else {
-            Iterator<User> iterator = mainUser.get().getFriendList().iterator();
-            while(iterator.hasNext()){
-                iterator.next();
-                iterator.remove();
-            }
-            responseDTO.setMessage("success");
-            responseDTO.setSuccess(true);
-        }
-        Assertions.assertTrue(responseDTO.isSuccess());
-        Assertions.assertEquals(responseDTO.getMessage(), "success");
-        Assertions.assertEquals(0, mainUser.get().getFriendList().size());
-        verify(userRepository, times(1)).findById(1L);
-    }
-
-    /**
-     * testing the business logic of the remptyFriendList method
-     * expecting error
-     */
-    @Test
-    public void testEmptyFriendList_userNotFound(){
-        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
-        Optional<User> mainUser = this.userRepository.findById(1L);
-        ResponseDTO responseDTO = responseDTOInvalid();
-        if(mainUser.isEmpty())
-            responseDTO.setMessage("user not found");
-        else {
-            Iterator<User> iterator = mainUser.get().getFriendList().iterator();
-            while(iterator.hasNext()){
-                iterator.next();
-                iterator.remove();
-            }
-            responseDTO.setMessage("success");
-            responseDTO.setSuccess(true);
-        }
-        Assertions.assertEquals(responseDTO.getMessage(), "user not found");
-    }
-
-
-    /**
-     * test email regex
-     */
-    @Test
-    @DisplayName("testing email checking method")
-    public void emailIsValidAssertTrue(){
-        String emailRegex = "(([^<>()\\[\\]\\\\.,;:\\s@\"]" +
-                "+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@" +
-                "((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))";
-        String[] emails = {"jeanpierre@email.com", ".j@e.c", "jeanpierre@yahoo.com"};
-        Assertions.assertTrue(Pattern.compile(emailRegex).matcher(emails[0]).find());
-        Assertions.assertFalse(Pattern.compile(emailRegex).matcher(emails[1]).find());
-        Assertions.assertTrue(Pattern.compile(emailRegex).matcher(user().getEmail()).find());
-    }
-
-    /**
-     * test nickname regex
-     */
-    @Test
-    @DisplayName("testing username validation method")
-    public void nicknameIsValid(){
-        String[] nicknames = {"titi", "t", "titi2", "..azd"};
-        String nicknameRegex = "^[a-zA-Z0-9_-]{4,16}$";
-        Assertions.assertTrue(Pattern.compile(nicknameRegex).matcher(nicknames[0]).find());
-        Assertions.assertFalse(Pattern.compile(nicknameRegex).matcher(nicknames[1]).find());
-        Assertions.assertTrue(Pattern.compile(nicknameRegex).matcher(nicknames[2]).find());
-        Assertions.assertFalse(Pattern.compile(nicknameRegex).matcher(nicknames[3]).find());
+        BDDMockito.when(this.userRepository.findByNickname(nickname)).thenReturn(Optional.of(user));
+        Assertions.assertEquals(size, user.getFriendList().size());
+        Assertions.assertTrue(this.service.emptyFriendList(nickname));
+        Assertions.assertEquals(0, user.getFriendList().size());
     }
 }
