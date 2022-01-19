@@ -1,7 +1,7 @@
 package fr.oukilson.backend.controller;
 
-import fr.oukilson.backend.dto.UserCreationDTO;
-import fr.oukilson.backend.dto.UserDTO;
+import fr.oukilson.backend.dto.user.UserCreationDTO;
+import fr.oukilson.backend.dto.user.UserDTO;
 import fr.oukilson.backend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

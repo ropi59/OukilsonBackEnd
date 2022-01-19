@@ -1,6 +1,6 @@
 package fr.oukilson.backend.configuration;
 
-import fr.oukilson.backend.entity.RegexCollection;
+import fr.oukilson.backend.model.RegexCollection;
 import fr.oukilson.backend.repository.UserRepository;
 import fr.oukilson.backend.service.UserService;
 import org.modelmapper.ModelMapper;
