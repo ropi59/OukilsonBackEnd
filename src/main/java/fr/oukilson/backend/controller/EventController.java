@@ -36,14 +36,15 @@ public class EventController {
      * Search for events by one of this two options :
      * - date after the provided date
      * - happening in a town
-     * When both options are set, only search by "date after" with the provided date.
-     * @param toSearch EventSearchDTO
+     * For now, if both parameter are included, only the date will be taken into consideration
+     * @param date Date to look after
+     * @param town Town to look
      * @return List<EventDTO>
      */
     @ResponseBody
-    @PostMapping("/search")
-    public List<EventDTO> findAllByFilters(@RequestBody EventSearchDTO toSearch) {
-        return this.service.findByFilter(toSearch);
+    @GetMapping("/search")
+    public List<EventDTO> findAllByFilters(@RequestParam(name="date") String date, @RequestParam(name="town") String town) {
+        return this.service.findByFilter(date, town);
     }
 
     /**
