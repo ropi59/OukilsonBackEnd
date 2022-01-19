@@ -25,8 +25,9 @@ public class UserService {
      * Method to save a user entity to the database
      * @param userCreationDTO User's data
      * @return UserDTO
+     * @throws Exception The use of spring's method "save" can throw an exception
      */
-    public UserDTO createUser(UserCreationDTO userCreationDTO) {
+    public UserDTO createUser(UserCreationDTO userCreationDTO) throws Exception{
         UserDTO result = null;
         if(this.regexCollection.getEmailPattern().matcher(userCreationDTO.getEmail()).find()
                 && this.regexCollection.getNicknamePattern().matcher(userCreationDTO.getNickname()).find()) {
