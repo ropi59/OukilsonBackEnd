@@ -13,7 +13,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +153,7 @@ public class EventServiceTest {
     @Test
     public void testFindAllEventsByTown() {
         // Mock 2 events in town Pau
-        List<Event> list = new ArrayList<>();
+        /*List<Event> list = new ArrayList<>();
         String town = "Pau";
         int size = 2;
         for (int i=0; i<size; i++) {
@@ -188,6 +187,10 @@ public class EventServiceTest {
         for (int i=0; i<size; i++) {
             Assertions.assertEquals(this.mapper.map(list.get(i), EventDTO.class), result.get(i));
         }
+        */
+
+         // TODO : A reviser
+        Assertions.fail();
     }
 
     /**
@@ -197,6 +200,7 @@ public class EventServiceTest {
     @DisplayName("Test : find all events after a given date")
     @Test
     public void testFindAllEventsByDateAfter() {
+        /*
         // Mock 3 events in 2156
         List<Event> list = new ArrayList<>();
         int size = 3;
@@ -229,6 +233,9 @@ public class EventServiceTest {
         for(int i=0; i<size; i++) {
             Assertions.assertEquals(this.mapper.map(list.get(i), EventDTO.class), result.get(i));
         }
+        */
+         // TODO A reviser
+        Assertions.fail();
     }
 
     /**
@@ -239,7 +246,7 @@ public class EventServiceTest {
     @Test
     public void testFindAllEventsWithNoDateAndNoTown() {
         EventSearchDTO toSearch = new EventSearchDTO();
-        List<EventDTO> result = this.service.findByFilter(toSearch);
+        List<EventDTO> result = this.service.findByFilter(null, null);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(0, result.size());
     }
@@ -251,6 +258,7 @@ public class EventServiceTest {
     @DisplayName("Test : find events when town and date filters are initialized")
     @Test
     public void testFindAllEventsWithBothDateAndTownGiven() {
+        /*
         // Mock 3 events in 2156
         List<Event> futureEvents = new ArrayList<>();
         int futureEventNb = 3;
@@ -299,6 +307,9 @@ public class EventServiceTest {
         for (int j=0; j<futureEventNb; j++) {
             Assertions.assertEquals(this.mapper.map(futureEvents.get(j), EventDTO.class), result.get(j));
         }
+        */
+         // TODO : A reviser
+        Assertions.fail();
     }
 
     // Method save

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -161,14 +162,8 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenNoParamGiven() throws Exception {
         Gson gson = this.getInitializedGSON();
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(new EventSearchDTO())))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
+        this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     /**
@@ -179,32 +174,25 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenStartingDateIsNull() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now();
-        ModelMapper mapper = new ModelMapper();
-        User user = this.createValidFullUser(1L, "tata");
+        String town = "Paris";
+        int size = 2;
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
-        Event event1 = this.createValidEvent(1L, game, user, location1);
-        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
-        location1.setEvent(event1);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
-        Event event2 = this.createValidEvent(1L, game, user, location2);
-        location2.setEvent(event2);
-        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
-        EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
-        Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
-        EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
-        Mockito.when(service.findByFilter(searchDTO2)).thenReturn(List.of(eventDTO2));
-        EventSearchDTO searchDTO3 = new EventSearchDTO(date.minusYears(1L), null);
-        Mockito.when(service.findByFilter(searchDTO3)).thenReturn(List.of(eventDTO1));
+        User user = this.createValidFullUser(1L, "tata");
+        List<EventDTO> events = new LinkedList<>();
+        ModelMapper mapper = new ModelMapper();
+        for (int i=0; i<size; i++) {
+            Location location =
+                new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
+            Event event = this.createValidEvent((long)i, game, user, location);
+            event.setLocation(location);
+            location.setEvent(event);
+            events.add(mapper.map(event, EventDTO.class));
+        }
+        Mockito.when(this.service.findByFilter("", town)).thenReturn(events);
 
-        // Send request
+        // Send Request
         Gson gson = this.getInitializedGSON();
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(searchDTO2)))
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get(route + "/search?date=&town="+town))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andReturn();
@@ -212,8 +200,10 @@ public class EventControllerTest {
         // Assert
         EventDTO[] array = gson.fromJson(result.getResponse().getContentAsString(StandardCharsets.UTF_8),
                 EventDTO[].class);
-        Assertions.assertEquals(1, array.length);
-        Assertions.assertEquals(eventDTO2, array[0]);
+        Assertions.assertEquals(size, array.length);
+        for (int i=0; i<size; i++) {
+            Assertions.assertEquals(events.get(i), array[i]);
+        }
     }
 
     /**
@@ -224,7 +214,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenTownIsNull() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now();
+       /* LocalDateTime date = LocalDateTime.now();
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
@@ -258,7 +248,9 @@ public class EventControllerTest {
         EventDTO[] array = gson.fromJson(result.getResponse().getContentAsString(StandardCharsets.UTF_8),
                 EventDTO[].class);
         Assertions.assertEquals(1, array.length);
-        Assertions.assertEquals(eventDTO1, array[0]);
+        Assertions.assertEquals(eventDTO1, array[0]);*/
+        // TODO A réviser
+        Assertions.fail();
     }
 
     /**
@@ -269,7 +261,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFilters() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now();
+        /*LocalDateTime date = LocalDateTime.now();
         ModelMapper mapper = new ModelMapper();
         User user = this.createValidFullUser(1L, "toto");
         Game game = this.createValidFullGame(1L, "The game");
@@ -281,11 +273,13 @@ public class EventControllerTest {
         Event event2 = this.createValidEvent(1L, game, user, location2);
         location2.setEvent(event2);
         EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
-        EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
+        String name = "Paris";
+        String stringDate = date.minusYears(1L).toString();
+
         Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
-        EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
+
         Mockito.when(service.findByFilter(searchDTO2)).thenReturn(List.of(eventDTO2));
-        EventSearchDTO searchDTO3 = new EventSearchDTO(date.minusYears(1L), null);
+
         Mockito.when(service.findByFilter(searchDTO3)).thenReturn(List.of(eventDTO1));
 
         // Send request
@@ -304,6 +298,10 @@ public class EventControllerTest {
                 EventDTO[].class);
         Assertions.assertEquals(1, array.length);
         Assertions.assertEquals(eventDTO1, array[0]);
+
+         */
+        // TODO : A reviser
+        Assertions.fail();
     }
 
     // Test delete route
