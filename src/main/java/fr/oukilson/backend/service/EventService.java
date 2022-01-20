@@ -136,19 +136,19 @@ public class EventService {
     public List<EventDTO> findByFilter(String date, String town) {
         // Get events
         List<Event> events;
-        if (date!=null) {
+        if (date!=null && !date.isBlank()) {
             LocalDateTime pointInTime;
             try {
                 pointInTime = LocalDateTime.parse(date);
                 events = this.repository.findAllByStartingDateAfter(pointInTime);
             }
             catch (Exception e) {
-                if (town!=null)
-                    events = this.repository.findAllByLocationTown(town);
+                if (town!=null && !town.isBlank())
+                    events = this.repository.findAllByLocationTownContaining(town);
                 else
                     events = new ArrayList<>();
             }
-        } else if (town!=null) {
+        } else if (town!=null && !town.isBlank()) {
             events = this.repository.findAllByLocationTownContaining(town);
         } else
             events = new ArrayList<>();
