@@ -253,7 +253,39 @@ public class EventServiceTest {
     @DisplayName("Test : find events when town & date filters are initialized")
     @Test
     public void testFindAllEventsWithBothDateAndTownGiven() {
-        Assertions.fail();
+        String town = "Nancy";
+        List<Event> townEvents = new LinkedList<>();
+        List<Event> dateEvents = new LinkedList<>();
+        int size = 3;
+        for (int i=0; i<size; i++) {
+            User user = this.createValidFullUser((long)i, "Nom"+i);
+            Game game = this.createValidFullGame((long)i, "Jeu "+i);
+            Location loc = new Location((long)i, "Ville "+i, null, null, null);
+            Event event = this.createValidEvent((long)i, game, user, loc);
+            loc.setEvent(event);
+            dateEvents.add(event);
+        }
+        LocalDateTime date = dateEvents.get(0).getStartingDate().minusYears(1);
+        size += 2;
+        Location loc = new Location((long) size, town, null, null, null);
+        for (int i=0; i<size; i++) {
+            User user = this.createValidFullUser(2L *size+i, "NomBis"+i);
+            Game game = this.createValidFullGame(2L *size+i, "JeuBis"+i);
+            Event event = this.createValidEvent(2L *size+i, game, user, loc);
+            loc.setEvent(event);
+            townEvents.add(event);
+        }
+
+        BDDMockito.when(this.repository.findAllByLocationTownContaining(town)).thenReturn(townEvents);
+        BDDMockito.when(this.repository.findAllByStartingDateAfter(date)).thenReturn(dateEvents);
+
+        List<EventDTO> result = this.service.findByFilter(date.toString(), town);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(dateEvents.size(), result.size());
+        Assertions.assertNotEquals(townEvents.size(), result.size());
+        for (int i=0; i<dateEvents.size(); i++) {
+            Assertions.assertEquals(this.mapper.map(dateEvents.get(i), EventDTO.class), result.get(i));
+        }
     }
 
     // Method save
