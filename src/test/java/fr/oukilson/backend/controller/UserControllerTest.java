@@ -136,7 +136,7 @@ public class UserControllerTest {
     @Test
     public void testCreateUserUserCreationThrowException() throws Exception {
         UserCreationDTO body = new UserCreationDTO("Toupie", "sdfghjklmmdj", "hibiscus@george.fr");
-        Mockito.when(this.service.createUser(body)).thenThrow(Exception.class);
+        Mockito.when(this.service.createUser(body)).thenThrow(NullPointerException.class);
         Gson gson = new Gson();
         this.mockMvc.perform(MockMvcRequestBuilders
                         .post(route)
