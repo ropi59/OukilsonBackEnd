@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -31,13 +32,108 @@ public class UserServiceTest {
 
     // Method createUser
 
+    /**
+     * Test addUserToFriendList when mainUser is null
+     */
+    @DisplayName("Test addUserToFriendList : mainUser is null")
+    @Test
+    public void testAddUserToFriendListNullMainUser() {
+        BDDMockito.when(userRepository.findByNickname(null)).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> this.service.addUserToFriendList(null, "Machin"));
+    }
 
+    /**
+     * Test addUserToFriendList when secondUser is null
+     */
+    @DisplayName("Test addUserToFriendList : secondUser is null")
+    @Test
+    public void testAddUserToFriendListNullSecondUser() {
+        String mainUser = "Ortie";
+        BDDMockito.when(userRepository.findByNickname(mainUser)).thenThrow(NullPointerException.class);
+        BDDMockito.when(userRepository.findByNickname(null)).thenThrow(NullPointerException.class);
+        Assertions.assertThrows(
+                NullPointerException.class,
+                () -> this.service.addUserToFriendList(mainUser, null));
+    }
 
+    /**
+     * Test addUserToFriendList when mainUser is not found
+     */
+    @DisplayName("Test addUserToFriendList : mainUser is not found")
+    @Test
+    public void testAddUserToFriendListMainUserNotFound() {
+        User mainUser = new User();
+        mainUser.setId(100000L);
+        mainUser.setNickname("Eliott");
+        User secondUser = new User();
+        secondUser.setId(200000L);
+        secondUser.setNickname("Dorian");
+        BDDMockito.when(userRepository.findByNickname(mainUser.getNickname())).thenReturn(Optional.of(mainUser));
+        Assertions.assertFalse(this.service.addUserToFriendList(mainUser.getNickname(), secondUser.getNickname()));
+    }
 
-    // Method addUserToFriendList
+    /**
+     * Test addUserToFriendList when secondUser is not found
+     */
+    @DisplayName("Test addUserToFriendList : secondUser is not found")
+    @Test
+    public void testAddUserToFriendListSecondUserNotFound() {
+        User mainUser = new User();
+        mainUser.setId(100000L);
+        mainUser.setNickname("Eliott");
+        User secondUser = new User();
+        secondUser.setId(200000L);
+        secondUser.setNickname("Dorian");
+        BDDMockito.when(userRepository.findByNickname(secondUser.getNickname())).thenReturn(Optional.of(secondUser));
+        Assertions.assertFalse(this.service.addUserToFriendList(mainUser.getNickname(), secondUser.getNickname()));
+    }
 
+    /**
+     * Test addUserToFriendList when secondUser is already in the friend list
+     */
+    @DisplayName("Test addUserToFriendList : secondUser already in")
+    @Test
+    public void testAddUserToFriendListSecondUserAlreadyInFriendList() {
+        // Setting up
+        User mainUser = new User();
+        mainUser.setId(100000L);
+        mainUser.setNickname("Eliott");
+        User secondUser = new User();
+        secondUser.setId(200000L);
+        secondUser.setNickname("Dorian");
+        mainUser.getFriendList().add(secondUser);
+        BDDMockito.when(userRepository.findByNickname(mainUser.getNickname())).thenReturn(Optional.of(mainUser));
+        BDDMockito.when(userRepository.findByNickname(secondUser.getNickname())).thenReturn(Optional.of(secondUser));
 
+        // Assert
+        Assertions.assertTrue(mainUser.getFriendList().contains(secondUser));
+        Assertions.assertFalse(this.service.addUserToFriendList(mainUser.getNickname(), secondUser.getNickname()));
+        Assertions.assertTrue(mainUser.getFriendList().contains(secondUser));
+    }
 
+    /**
+     * Test addUserToFriendList when secondUser is added successfully into the friend list
+     */
+    @DisplayName("Test addUserToFriendList : secondUser added successfully")
+    @Test
+    public void testAddUserToFriendListSecondUserAddedSuccessfully() {
+        // Setting up
+        User mainUser = new User();
+        mainUser.setId(100000L);
+        mainUser.setNickname("Eliott");
+        User secondUser = new User();
+        secondUser.setId(200000L);
+        secondUser.setNickname("Dorian");
+        BDDMockito.when(userRepository.findByNickname(mainUser.getNickname())).thenReturn(Optional.of(mainUser));
+        BDDMockito.when(userRepository.findByNickname(secondUser.getNickname())).thenReturn(Optional.of(secondUser));
+
+        // Assert
+        Assertions.assertFalse(mainUser.getFriendList().contains(secondUser));
+        Assertions.assertTrue(this.service.addUserToFriendList(mainUser.getNickname(), secondUser.getNickname()));
+        Assertions.assertTrue(mainUser.getFriendList().contains(secondUser));
+    }
 
     // Method removeUserFromFriendList
 
