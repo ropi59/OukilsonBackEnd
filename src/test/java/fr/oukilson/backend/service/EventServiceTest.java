@@ -149,102 +149,97 @@ public class EventServiceTest {
      * Testing for search event method by giving a town filter.
      * Should return all events in the given town.
      */
-    @DisplayName("Test : find all events from a certain town")
+    @DisplayName("Test : find all events, town only, no date")
     @Test
-    public void testFindAllEventsByTown() {
-        // Mock 2 events in town Pau
-        /*List<Event> list = new ArrayList<>();
-        String town = "Pau";
-        int size = 2;
+    public void testFindAllEventsByTownOnly() {
+        // Setting up
+        List<Event> events = new LinkedList<>();
+        int size = 4;
+        String town = "Lyon";
         for (int i=0; i<size; i++) {
-            User user = this.createValidFullUser((long) i, "tata000"+i);
-            Game game = this.createValidFullGame((long) i, "The game V"+i);
-            Location location =
-                    new Location((long) i, town, "64000", "Rue Mathieu Lalanne", null);
-            Event event = this.createValidEvent((long) i, game, user, location);
-            location.setEvent(event);
-            list.add(event);
+            User user = this.createValidFullUser((long)i, "Nom"+i);
+            Game game = this.createValidFullGame((long)i, "Jeu "+i);
+            Location loc = new Location((long)i, town, null, null, null);
+            Event event = this.createValidEvent((long)i, game, user, loc);
+            loc.setEvent(event);
+            events.add(event);
         }
-        BDDMockito.when(this.repository.findAllByLocationTown(town)).thenReturn(list);
+        BDDMockito.when(this.repository.findAllByLocationTownContaining(town)).thenReturn(events);
+        BDDMockito.when(this.repository.findAllByStartingDateAfter(ArgumentMatchers.any(LocalDateTime.class)))
+                .thenReturn(new LinkedList<>());
 
-        // Anything other than the town location should return an empty list
-        BDDMockito
-                .when(this.repository.findAllByLocationTown(
-                        AdditionalMatchers.not(ArgumentMatchers.eq(town))))
-                .thenReturn(new ArrayList<>());
-        BDDMockito
-                .when(this.repository.findAllByStartingDateAfter(ArgumentMatchers.any(LocalDateTime.class)))
-                .thenReturn(new ArrayList<>());
-
-        // Search request
-        EventSearchDTO toSearch = new EventSearchDTO();
-        toSearch.setTown(town);
-        List<EventDTO> result = this.service.findByFilter(toSearch);
-
-        // Assert
+        List<EventDTO> result = this.service.findByFilter("", town);
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.size(), size);
+        Assertions.assertEquals(events.size(), result.size());
         for (int i=0; i<size; i++) {
-            Assertions.assertEquals(this.mapper.map(list.get(i), EventDTO.class), result.get(i));
+            Assertions.assertEquals(this.mapper.map(events.get(i), EventDTO.class), result.get(i));
         }
-        */
-
-         // TODO : A reviser
-        Assertions.fail();
     }
 
     /**
      * Testing for search event method by giving a date filter.
      * Must return all events after the given date.
      */
-    @DisplayName("Test : find all events after a given date")
+    @DisplayName("Test : find all events, date only, no town")
     @Test
-    public void testFindAllEventsByDateAfter() {
-        /*
-        // Mock 3 events in 2156
-        List<Event> list = new ArrayList<>();
-        int size = 3;
+    public void testFindAllEventsByDateAfterOnly() {
+        // Setting up
+        List<Event> events = new LinkedList<>();
+        int size = 8;
         for (int i=0; i<size; i++) {
-            User user = this.createValidFullUser((long) i, "tata000"+i);
-            Game game = this.createValidFullGame((long) i, "The game V"+i);
-            Location location = new Location((long) i, "Ville n°"+i, "XXXX"+i, i+" rue du Jeu", null);
-            Event event = this.createValidEvent((long) i, game, user, location);
-            location.setEvent(event);
-            event.setStartingDate(event.getStartingDate().withYear(2156));
-            event.setEndingDate(event.getEndingDate().withYear(2156));
-            list.add(event);
+            User user = this.createValidFullUser((long)i, "Nom"+i);
+            Game game = this.createValidFullGame((long)i, "Jeu "+i);
+            Location loc = new Location((long)i, "Ville "+i, null, null, null);
+            Event event = this.createValidEvent((long)i, game, user, loc);
+            loc.setEvent(event);
+            events.add(event);
         }
-        LocalDateTime date = LocalDateTime.now();
-        BDDMockito.when(this.repository.findAllByStartingDateAfter(date)).thenReturn(list);
+        LocalDateTime date = events.get(0).getStartingDate().minusYears(1);
+        BDDMockito.when(this.repository.findAllByLocationTownContaining(ArgumentMatchers.anyString()))
+                .thenReturn(new LinkedList<>());
+        BDDMockito.when(this.repository.findAllByStartingDateAfter(date)).thenReturn(events);
 
-        // Mock empty list for any search by town
-        BDDMockito
-                .when(this.repository.findAllByLocationTown(ArgumentMatchers.anyString()))
-                .thenReturn(new ArrayList<>());
-
-        // Search request
-        EventSearchDTO toSearch = new EventSearchDTO();
-        toSearch.setStartingDate(date);
-        List<EventDTO> result = this.service.findByFilter(toSearch);
-
-        // Assert
+        List<EventDTO> result = this.service.findByFilter(date.toString(), "");
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.size(), size);
-        for(int i=0; i<size; i++) {
-            Assertions.assertEquals(this.mapper.map(list.get(i), EventDTO.class), result.get(i));
+        Assertions.assertEquals(events.size(), result.size());
+        for (int i=0; i<size; i++) {
+            Assertions.assertEquals(this.mapper.map(events.get(i), EventDTO.class), result.get(i));
         }
-        */
-         // TODO A reviser
-        Assertions.fail();
+    }
+
+    /**
+     * Testing for search event method by giving empty filters.
+     * Must return an empty list.
+     */
+    @DisplayName("Test : find all events, empty date & town")
+    @Test
+    public void testFindAllEventsWithEmptyFilters() {
+        EventSearchDTO toSearch = new EventSearchDTO();
+        List<EventDTO> result = this.service.findByFilter("", "");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
     }
 
     /**
      * Testing for search event method by giving no filters.
      * Should return an empty list
      */
+    @DisplayName("Test : search when date is null")
+    @Test
+    public void testFindAllEventsWithNullDate() {
+        EventSearchDTO toSearch = new EventSearchDTO();
+        List<EventDTO> result = this.service.findByFilter(null, null);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(0, result.size());
+    }
+
+    /**
+     * Testing for search event method by giving null filters.
+     * Should return an empty list
+     */
     @DisplayName("Test : search when all filters are null")
     @Test
-    public void testFindAllEventsWithNoDateAndNoTown() {
+    public void testFindAllEventsWithNullDateAndNullTown() {
         EventSearchDTO toSearch = new EventSearchDTO();
         List<EventDTO> result = this.service.findByFilter(null, null);
         Assertions.assertNotNull(result);
@@ -255,60 +250,9 @@ public class EventServiceTest {
      * Testing for search event method by giving both town and date filters.
      * If both are present, then the date filter takes priority.
      */
-    @DisplayName("Test : find events when town and date filters are initialized")
+    @DisplayName("Test : find events when town & date filters are initialized")
     @Test
     public void testFindAllEventsWithBothDateAndTownGiven() {
-        /*
-        // Mock 3 events in 2156
-        List<Event> futureEvents = new ArrayList<>();
-        int futureEventNb = 3;
-        int i = 0;
-        while (i<futureEventNb) {
-            User user = this.createValidFullUser((long) i, "tata000"+i);
-            Game game = this.createValidFullGame((long) i, "The game V"+i);
-            Location location = new Location((long) i, "Ville n°"+i, "XXXX"+i, i+" rue du Jeu", null);
-            Event event = this.createValidEvent((long) i, game, user, location);
-            location.setEvent(event);
-            event.setStartingDate(event.getStartingDate().withYear(2156));
-            event.setEndingDate(event.getEndingDate().withYear(2156));
-            futureEvents.add(event);
-            i++;
-        }
-        LocalDateTime date = LocalDateTime.now();
-        BDDMockito.when(this.repository.findAllByStartingDateAfter(date)).thenReturn(futureEvents);
-
-        // Mock 2 events in Paris
-        int parisEventNb = 2;
-        List<Event> parisEvents = new ArrayList<>();
-        String town = "Paris";
-        while (i<(parisEventNb+futureEventNb)) {
-            User user = this.createValidFullUser((long) i, "tata000"+i);
-            Game game = this.createValidFullGame((long) i, "The game V"+i);
-            Location location = new Location((long) i, town, "75012", "Place Louis-Armand", null);
-            Event event = this.createValidEvent((long) i, game, user, location);
-            location.setEvent(event);
-            parisEvents.add(event);
-            i++;
-        }
-        BDDMockito.when(this.repository.findAllByLocationTown(town)).thenReturn(parisEvents);
-
-        // Mock empty list for any search by town
-        BDDMockito
-                .when(this.repository.findAllByLocationTown(ArgumentMatchers.anyString()))
-                .thenReturn(new ArrayList<>());
-
-        // Search request
-        EventSearchDTO toSearch = new EventSearchDTO(date, town);
-        List<EventDTO> result = this.service.findByFilter(toSearch);
-
-        // Assert
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(futureEventNb, result.size());
-        for (int j=0; j<futureEventNb; j++) {
-            Assertions.assertEquals(this.mapper.map(futureEvents.get(j), EventDTO.class), result.get(j));
-        }
-        */
-         // TODO : A reviser
         Assertions.fail();
     }
 
