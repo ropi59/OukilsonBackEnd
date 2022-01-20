@@ -1,18 +1,20 @@
 package fr.oukilson.backend.service;
 
+import fr.oukilson.backend.dto.user.UserCreationDTO;
+import fr.oukilson.backend.dto.user.UserDTO;
 import fr.oukilson.backend.entity.User;
 import fr.oukilson.backend.model.RegexCollection;
 import fr.oukilson.backend.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -31,6 +33,146 @@ public class UserServiceTest {
     }
 
     // Method createUser
+
+    /**
+     * Test createUser when userCreationDTO is null
+     */
+    @DisplayName("Test createUser : userCreationDTO null")
+    @Test
+    public void testCreateUserNullDTO() {
+        UserDTO dto = Assertions.assertDoesNotThrow(() -> this.service.createUser(null));
+        Assertions.assertNull(dto);
+    }
+
+    /**
+     * Test createUser when nickname is null
+     */
+    @DisplayName("Test createUser : nickname null")
+    @Test
+    public void testCreateUserNullNickname() {
+        UserCreationDTO dto = new UserCreationDTO(null, "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when password is null
+     */
+    @DisplayName("Test createUser : password null")
+    @Test
+    public void testCreateUserNullPassword() {
+        UserCreationDTO dto = new UserCreationDTO("Raymond", null, "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when email is null
+     */
+    @DisplayName("Test createUser : email null")
+    @Test
+    public void testCreateUserNullEmail() {
+        UserCreationDTO dto = new UserCreationDTO("Trevor", "esdrftghjkkl", null);
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when nickname is empty
+     */
+    @DisplayName("Test createUser : nickname is empty")
+    @Test
+    public void testCreateUserEmptyNickname() {
+        UserCreationDTO dto = new UserCreationDTO("", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when password is empty
+     */
+    @DisplayName("Test createUser : password is empty")
+    @Test
+    public void testCreateUserEmptyPassword() {
+        UserCreationDTO dto = new UserCreationDTO("Billy", "", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when email is empty
+     */
+    @DisplayName("Test createUser : email is empty")
+    @Test
+    public void testCreateUserEmptyEmail() {
+        UserCreationDTO dto = new UserCreationDTO("Jimmy", "esdrftghjkkl", "");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when email is not valid
+     */
+    @DisplayName("Test createUser : email is not valid")
+    @Test
+    public void testCreateUserEmailNotValid() {
+        UserCreationDTO dto = new UserCreationDTO("Touty", "esdrftghjkkl", "blabla@tutu.");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("Touty", "esdrftghjkkl", "blablatutu.");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("Touty", "esdrftghjkkl", "blabla@tutu");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when nickname is not valid
+     */
+    @DisplayName("Test createUser : nickname is not valid")
+    @Test
+    public void testCreateUserNicknameNotValid() {
+        UserCreationDTO dto = new UserCreationDTO("Eloïse", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("Un nickname", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("Boréale", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("P89", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO(
+                "Piiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                "esdrftghjkkl",
+                "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("P", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+        dto = new UserCreationDTO("Moldu!", "esdrftghjkkl", "blabla@tutu.com");
+        Assertions.assertNull(this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when nickname and email are valid but one of them is already in the database
+     */
+    @DisplayName("Test createUser : Duplicate entry")
+    @Test
+    public void testCreateUserNicknameAlreadyExists() {
+        UserCreationDTO dto = new UserCreationDTO("Jimmy", "esdrftghjkkl", "letruc@yahoo.de");
+        ModelMapper mapper = new ModelMapper();
+        User user = mapper.map(dto, User.class);
+        BDDMockito.given(userRepository.save(ArgumentMatchers.any(User.class)))
+                .willAnswer(inv -> { throw new SQLException("Duplicate entry");});
+        Assertions.assertThrows(SQLException.class, () -> this.service.createUser(dto));
+    }
+
+    /**
+     * Test createUser when nickname and email are valid but nickname is not in database
+     */
+    @DisplayName("Test createUser : everything is ok")
+    @Test
+    public void testCreateUser() {
+        UserCreationDTO dto = new UserCreationDTO("Jimmy", "esdrftghjkkl", "letruc@yahoo.de");
+        ModelMapper mapper = new ModelMapper();
+        User user = mapper.map(dto, User.class);
+        BDDMockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(user);
+        UserDTO result = this.service.createUser(dto);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(mapper.map(user, UserDTO.class), result);
+    }
+
+    // Method addUserToFriendList
 
     /**
      * Test addUserToFriendList when mainUser is null
