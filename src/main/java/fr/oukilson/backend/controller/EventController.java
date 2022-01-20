@@ -43,7 +43,8 @@ public class EventController {
      */
     @ResponseBody
     @GetMapping("/search")
-    public List<EventDTO> findAllByFilters(@RequestParam(name="date") String date, @RequestParam(name="town") String town) {
+    public List<EventDTO> findAllByFilters(@RequestParam(name="date", defaultValue = "") String date,
+                                           @RequestParam(name="town", defaultValue = "") String town) {
         return this.service.findByFilter(date, town);
     }
 
