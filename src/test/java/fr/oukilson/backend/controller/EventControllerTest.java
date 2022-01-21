@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -161,11 +162,7 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenNoParamGiven() throws Exception {
         Gson gson = this.getInitializedGSON();
-        this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(new EventSearchDTO())))
+        this.mockMvc.perform(MockMvcRequestBuilders.get(route+"/search"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
@@ -179,32 +176,25 @@ public class EventControllerTest {
     @Test
     public void testFindAllByFiltersWhenStartingDateIsNull() throws Exception {
         // Mocking
-        LocalDateTime date = LocalDateTime.now();
-        ModelMapper mapper = new ModelMapper();
-        User user = this.createValidFullUser(1L, "tata");
+        String town = "Paris";
+        int size = 2;
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
-        Event event1 = this.createValidEvent(1L, game, user, location1);
-        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
-        location1.setEvent(event1);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
-        Event event2 = this.createValidEvent(1L, game, user, location2);
-        location2.setEvent(event2);
-        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
-        EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
-        Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
-        EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
-        Mockito.when(service.findByFilter(searchDTO2)).thenReturn(List.of(eventDTO2));
-        EventSearchDTO searchDTO3 = new EventSearchDTO(date.minusYears(1L), null);
-        Mockito.when(service.findByFilter(searchDTO3)).thenReturn(List.of(eventDTO1));
+        User user = this.createValidFullUser(1L, "tata");
+        List<EventDTO> events = new LinkedList<>();
+        ModelMapper mapper = new ModelMapper();
+        for (int i=0; i<size; i++) {
+            Location location =
+                new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
+            Event event = this.createValidEvent((long)i, game, user, location);
+            event.setLocation(location);
+            location.setEvent(event);
+            events.add(mapper.map(event, EventDTO.class));
+        }
+        Mockito.when(this.service.findByFilter("", town)).thenReturn(events);
 
-        // Send request
+        // Send Request
         Gson gson = this.getInitializedGSON();
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(searchDTO2)))
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get(route + "/search?date=&town="+town))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andReturn();
@@ -212,8 +202,10 @@ public class EventControllerTest {
         // Assert
         EventDTO[] array = gson.fromJson(result.getResponse().getContentAsString(StandardCharsets.UTF_8),
                 EventDTO[].class);
-        Assertions.assertEquals(1, array.length);
-        Assertions.assertEquals(eventDTO2, array[0]);
+        Assertions.assertEquals(size, array.length);
+        for (int i=0; i<size; i++) {
+            Assertions.assertEquals(events.get(i), array[i]);
+        }
     }
 
     /**
@@ -223,42 +215,38 @@ public class EventControllerTest {
     @DisplayName("Test : find all events by filters but the town filter is null")
     @Test
     public void testFindAllByFiltersWhenTownIsNull() throws Exception {
-        // Mocking
-        LocalDateTime date = LocalDateTime.now();
+        // Setting up
+        LocalDateTime mytime = LocalDateTime.now().minusMonths(2);
+        List<EventDTO> events = new LinkedList<>();
         ModelMapper mapper = new ModelMapper();
-        User user = this.createValidFullUser(1L, "toto");
-        Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
-        Event event1 = this.createValidEvent(1L, game, user, location1);
-        location1.setEvent(event1);
-        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
-        Event event2 = this.createValidEvent(1L, game, user, location2);
-        location2.setEvent(event2);
-        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
-        EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
-        Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
-        EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
-        Mockito.when(service.findByFilter(searchDTO2)).thenReturn(List.of(eventDTO2));
-        EventSearchDTO searchDTO3 = new EventSearchDTO(date.minusYears(1L), null);
-        Mockito.when(service.findByFilter(searchDTO3)).thenReturn(List.of(eventDTO1));
+        int size = 5;
+        for (int i=0; i<size; i++) {
+            Location location =
+                    new Location((long)i, "Paris "+i, "75008", "Avenue des Champs Elysée", null);
+            Game game = this.createValidFullGame((long)i, "Un jeu random "+i);
+            User user = this.createValidFullUser((long)i, "un user "+i);
+            Event event = this.createValidEvent((long)i, game, user, location);
+            location.setEvent(event);
+            event.setStartingDate(mytime.plusMonths(8));
+            events.add(mapper.map(event, EventDTO.class));
+        }
+        Mockito.when(this.service.findByFilter(mytime.toString(), "")).thenReturn(events);
 
-        // Send request
+        // Request
         Gson gson = this.getInitializedGSON();
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(searchDTO3)))
+                        .get(route + "/search?date="+ mytime +"&town="))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andReturn();
 
-        // Assert
+        // Assertions
         EventDTO[] array = gson.fromJson(result.getResponse().getContentAsString(StandardCharsets.UTF_8),
                 EventDTO[].class);
-        Assertions.assertEquals(1, array.length);
-        Assertions.assertEquals(eventDTO1, array[0]);
+        Assertions.assertEquals(size, array.length);
+        for (int i=0; i<size; i++) {
+            Assertions.assertEquals(events.get(i), array[i]);
+        }
     }
 
     /**
@@ -268,42 +256,48 @@ public class EventControllerTest {
     @DisplayName("Test : find all events by filters with all filters initialized")
     @Test
     public void testFindAllByFilters() throws Exception {
-        // Mocking
-        LocalDateTime date = LocalDateTime.now();
+        // Setting up
         ModelMapper mapper = new ModelMapper();
-        User user = this.createValidFullUser(1L, "toto");
+        List<EventDTO> townEvents = new LinkedList<>();
+        int townEventsSize = 3;
+        List<EventDTO> dateEvents = new LinkedList<>();
+        int dateEventsSize = townEventsSize+1;
         Game game = this.createValidFullGame(1L, "The game");
-        Location location1 = new Location(45L, "Pau", "64000", "Boulevard des Pyrénées", null);
-        Event event1 = this.createValidEvent(1L, game, user, location1);
-        location1.setEvent(event1);
-        EventDTO eventDTO1 = mapper.map(event1, EventDTO.class);
-        Location location2 = new Location(45L, "Paris", "75008", "Avenue des Champs Elysée", null);
-        Event event2 = this.createValidEvent(1L, game, user, location2);
-        location2.setEvent(event2);
-        EventDTO eventDTO2 = mapper.map(event2, EventDTO.class);
-        EventSearchDTO searchDTO1 = new EventSearchDTO(date.minusYears(1L), "Paris");
-        Mockito.when(service.findByFilter(searchDTO1)).thenReturn(List.of(eventDTO1));
-        EventSearchDTO searchDTO2 = new EventSearchDTO(null, "Paris");
-        Mockito.when(service.findByFilter(searchDTO2)).thenReturn(List.of(eventDTO2));
-        EventSearchDTO searchDTO3 = new EventSearchDTO(date.minusYears(1L), null);
-        Mockito.when(service.findByFilter(searchDTO3)).thenReturn(List.of(eventDTO1));
+        User user = this.createValidFullUser(1L, "tata");
+        String town = "Pau";
+        for (int i=0; i<townEventsSize; i++) {
+            Location location =
+                new Location((long)i, town, "64000", "Boulevard des Pyrénées", null);
+            Event event = this.createValidEvent((long)i, game, user, location);
+            location.setEvent(event);
+            townEvents.add(mapper.map(event, EventDTO.class));
+        }
+        for (int i=0; i<dateEventsSize; i++) {
+            Location location = new Location(10L *i, "Ville "+i, null, null, null);
+            Event event = this.createValidEvent(10L*i, game, user, location);
+            location.setEvent(event);
+            dateEvents.add(mapper.map(event, EventDTO.class));
+        }
+        String date = dateEvents.get(0).getStartingDate().minusDays(10).toString();
+        Mockito.when(this.service.findByFilter(date, town)).thenReturn(dateEvents);
+        Mockito.when(this.service.findByFilter(date, "")).thenReturn(dateEvents);
+        Mockito.when(this.service.findByFilter("", town)).thenReturn(townEvents);
 
-        // Send request
+        // Request
         Gson gson = this.getInitializedGSON();
         MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gson.toJson(searchDTO1)))
+                        .get(route + "/search?date="+date+"&town="+town))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andReturn();
 
-        // Assert
+        // Assertions
         EventDTO[] array = gson.fromJson(result.getResponse().getContentAsString(StandardCharsets.UTF_8),
                 EventDTO[].class);
-        Assertions.assertEquals(1, array.length);
-        Assertions.assertEquals(eventDTO1, array[0]);
+        Assertions.assertEquals(dateEventsSize, array.length);
+        for (int i=0; i<dateEventsSize; i++) {
+            Assertions.assertEquals(dateEvents.get(i), array[i]);
+        }
     }
 
     // Test delete route
@@ -549,7 +543,7 @@ public class EventControllerTest {
     public void testAddUserInEventWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -565,7 +559,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -583,7 +577,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -602,7 +596,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -621,7 +615,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEvent(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user")
+                        .put(route+"/add_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -640,7 +634,7 @@ public class EventControllerTest {
     public void testAddUserInEventInWaitingQueueWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -656,7 +650,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -674,7 +668,7 @@ public class EventControllerTest {
         EventAddUserDTO body = new EventAddUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -693,7 +687,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -712,7 +706,7 @@ public class EventControllerTest {
         Mockito.when(this.service.addUserInEventInWaitingQueue(ArgumentMatchers.any(EventAddUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/add_user/waiting")
+                        .put(route+"/add_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -731,7 +725,7 @@ public class EventControllerTest {
     public void testRemoveUserInEventWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -747,7 +741,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -765,7 +759,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -784,7 +778,7 @@ public class EventControllerTest {
         Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -803,7 +797,7 @@ public class EventControllerTest {
         Mockito.when(this.service.removeUserInEvent(ArgumentMatchers.any(EventRemoveUserDTO.class))).thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user")
+                        .put(route+"/remove_user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -822,7 +816,7 @@ public class EventControllerTest {
     public void tesRemoveUserInWaitingQueueWithNullValue() throws Exception {
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(null)))
@@ -838,7 +832,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO("50b3e71f-cd84-4898-87ea-69d33c4bd7d5", null);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -856,7 +850,7 @@ public class EventControllerTest {
         EventRemoveUserDTO body = new EventRemoveUserDTO(null, "Toto");
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -877,7 +871,7 @@ public class EventControllerTest {
                 .thenReturn(true);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))
@@ -898,7 +892,7 @@ public class EventControllerTest {
                 .thenReturn(false);
         Gson gson = this.getInitializedGSON();
         this.mockMvc.perform(MockMvcRequestBuilders
-                        .post(route+"/remove_user/waiting")
+                        .put(route+"/remove_user/waiting")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(gson.toJson(body)))

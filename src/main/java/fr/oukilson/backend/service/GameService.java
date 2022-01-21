@@ -30,13 +30,13 @@ public class GameService {
 
     /**
      * Return a list of all games sharing the same name or part of it.
-     * @param game GameUuidDTO
+     * @param name The string to search
      * @return List of GameUuidDTO
      */
-    public List<GameUuidDTO> findByName(GameUuidDTO game) {
+    public List<GameUuidDTO> findByName(String name) {
         List<GameUuidDTO> result = new LinkedList<>();
-        if (game!=null && game.getName()!=null) {
-            repository.findAllByNameContaining(game.getName()).forEach(
+        if (name!=null) {
+            repository.findAllByNameContaining(name).forEach(
                     g -> result.add(this.mapper.map(g, GameUuidDTO.class))
             );
         }

@@ -36,14 +36,16 @@ public class EventController {
      * Search for events by one of this two options :
      * - date after the provided date
      * - happening in a town
-     * When both options are set, only search by "date after" with the provided date.
-     * @param toSearch EventSearchDTO
+     * For now, if both parameter are included, only the date will be taken into consideration
+     * @param date Date to look after
+     * @param town Town to look
      * @return List<EventDTO>
      */
     @ResponseBody
-    @PostMapping("/search")
-    public List<EventDTO> findAllByFilters(@RequestBody EventSearchDTO toSearch) {
-        return this.service.findByFilter(toSearch);
+    @GetMapping("/search")
+    public List<EventDTO> findAllByFilters(@RequestParam(name="date", defaultValue = "") String date,
+                                           @RequestParam(name="town", defaultValue = "") String town) {
+        return this.service.findByFilter(date, town);
     }
 
     /**
@@ -104,7 +106,7 @@ public class EventController {
      * @param tuple EventAddUserDTO
      * @return True if added
      */
-    @PostMapping("/add_user")
+    @PutMapping("/add_user")
     public ResponseEntity<Boolean> addUserInEvent(@RequestBody EventAddUserDTO tuple) {
         boolean result = this.service.addUserInEvent(tuple);
         return ResponseEntity.ok(result);
@@ -115,7 +117,7 @@ public class EventController {
      * @param tuple EventAddUserDTO
      * @return True if added
      */
-    @PostMapping("/add_user/waiting")
+    @PutMapping("/add_user/waiting")
     public ResponseEntity<Boolean> addUserInEventInWaitingQueue(@RequestBody EventAddUserDTO tuple) {
         boolean result = this.service.addUserInEventInWaitingQueue(tuple);
         return ResponseEntity.ok(result);
@@ -126,7 +128,7 @@ public class EventController {
      * @param tuple EventRemoveUserDTO
      * @return True if removed
      */
-    @PostMapping("/remove_user")
+    @PutMapping("/remove_user")
     public ResponseEntity<Boolean> removeUserInEvent(@RequestBody EventRemoveUserDTO tuple) {
         boolean result = this.service.removeUserInEvent(tuple);
         return ResponseEntity.ok(result);
@@ -137,7 +139,7 @@ public class EventController {
      * @param tuple EventRemoveUserDTO
      * @return True if removed
      */
-    @PostMapping("/remove_user/waiting")
+    @PutMapping("/remove_user/waiting")
     public ResponseEntity<Boolean> removeUserInWaitingQueue(@RequestBody EventRemoveUserDTO tuple) {
         boolean result = this.service.removeUserInWaitingQueue(tuple);
         return ResponseEntity.ok(result);
