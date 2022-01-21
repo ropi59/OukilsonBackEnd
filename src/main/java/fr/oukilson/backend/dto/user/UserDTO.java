@@ -1,10 +1,12 @@
 package fr.oukilson.backend.dto.user;
 
 import lombok.*;
+import java.util.List;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class UserNameDTO {
+public class UserDTO {
     private String nickname;
+    private List<UserNameDTO> friendList;
 }

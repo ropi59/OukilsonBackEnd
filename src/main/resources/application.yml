@@ -1,7 +1,11 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/oukilson
     username: root
     password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
+environment:
+  emailRegex: (([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))
+  nicknameRegex: "^[a-zA-Z0-9_-]{4,16}$"
+  nameRegex: "^[a-zA-Z]{2,45}$"
