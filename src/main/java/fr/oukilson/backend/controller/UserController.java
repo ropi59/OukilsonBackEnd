@@ -39,7 +39,7 @@ public class UserController {
         return result;
     }
 
-     * Method to save a user in the database
+    /* Method to save a user in the database
      * @param userCreationDTO the user object to be saved
      * @return ResponseEntity<UserDTO>
      */
