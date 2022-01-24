@@ -8,4 +8,3 @@ import lombok.*;
 public class UserNameDTO {
     private String nickname;
 }
-
