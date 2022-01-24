@@ -8,6 +8,7 @@ import fr.oukilson.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import java.util.*;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class UserService {
@@ -22,6 +23,21 @@ public class UserService {
     }
 
     /**
+     * Search a user by nickname
+     * @param nickname User's nickname
+     * @return UserDTO
+     */
+    public UserDTO findUserByNickname(String nickname) {
+        UserDTO result;
+        if (this.regexCollection.getNicknamePattern().matcher(nickname).find()) {
+            Optional<User> optionalUser = userRepository.findByNickname(nickname);
+            result = optionalUser.map(user -> this.modelMapper.map(user, UserDTO.class)).orElse(null);
+        }
+        else
+            result = null;
+        return result;
+    }
+
      * Method to save a user entity to the database
      * @param userCreationDTO User's data
      * @return UserDTO

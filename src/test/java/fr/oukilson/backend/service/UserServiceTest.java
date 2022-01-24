@@ -32,6 +32,55 @@ public class UserServiceTest {
         service = new UserService(userRepository, new ModelMapper(), regexCollection);
     }
 
+    // Method findUserByNickname
+
+    /**
+     * Test findUserByNickname when nickname is null
+     */
+    @DisplayName("Test findUserByNickname : nickname is null")
+    @Test
+    public void testFindUserByNicknameNull() {
+        Assertions.assertThrows(NullPointerException.class, () -> this.service.findUserByNickname(null));
+    }
+
+    /**
+     * Test findUserByNickname when nickname is invalid
+     */
+    @DisplayName("Test findUserByNickname : nickname is invalid")
+    @Test
+    public void testFindUserByNicknameInvalid() {
+        String nickname = "Clément";
+        Assertions.assertNull(this.service.findUserByNickname(nickname));
+    }
+
+    /**
+     * Test findUserByNickname when nickname is valid but the user is not found
+     */
+    @DisplayName("Test findUserByNickname : user not found")
+    @Test
+    public void testFindUserByNicknameUserNotFound() {
+        String nickname = "Popo";
+        BDDMockito.when(this.userRepository.findByNickname(nickname)).thenReturn(Optional.empty());
+        Assertions.assertNull(this.service.findUserByNickname(nickname));
+    }
+
+    /**
+     * Test findUserByNickname when nickname is valid and the user is found
+     */
+    @DisplayName("Test findUserByNickname : user found")
+    @Test
+    public void testFindUserByNicknameUserFound() {
+        User user = new User();
+        user.setNickname("Bruce");
+        user.setPassword("kljsgfsmirgu");
+        user.setId(1L);
+        BDDMockito.when(this.userRepository.findByNickname(user.getNickname())).thenReturn(Optional.of(user));
+        UserDTO result = this.service.findUserByNickname(user.getNickname());
+        Assertions.assertNotNull(result);
+        ModelMapper mapper = new ModelMapper();
+        Assertions.assertEquals(mapper.map(user, UserDTO.class), result);
+    }
+
     // Method createUser
 
     /**

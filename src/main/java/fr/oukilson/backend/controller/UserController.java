@@ -19,6 +19,26 @@ public class UserController {
     }
 
     /**
+     * Find a user and send its info back
+     * @param nickname User's nickname
+     * @return UserDTO
+     */
+    @GetMapping("{nickname}")
+    public ResponseEntity<UserDTO> findUserByNickname(@PathVariable String nickname) {
+        ResponseEntity<UserDTO> result;
+        try {
+            UserDTO userDTO = this.userService.findUserByNickname(nickname);
+            if (userDTO!=null)
+                result = ResponseEntity.ok(userDTO);
+            else
+                result = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            result = ResponseEntity.badRequest().build();
+        }
+        return result;
+    }
+
      * Method to save a user in the database
      * @param userCreationDTO the user object to be saved
      * @return ResponseEntity<UserDTO>
@@ -38,7 +58,7 @@ public class UserController {
         }
         return result;
     }
-
+  
     /**
      * Add a user to another user's friend list, asking for both users' nickname
      * @param nickname1 Nickname of the main user
