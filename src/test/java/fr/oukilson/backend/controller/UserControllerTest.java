@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.LinkedList;
 
 @WebMvcTest(controllers = UserController.class)
@@ -81,7 +80,7 @@ public class UserControllerTest {
     @Test
     public void testFindByNicknameNull() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.get(route))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     /**
@@ -224,7 +223,7 @@ public class UserControllerTest {
     @Test
     public void testAddUserToFriendListNullId1() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.put(route+"/add/"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     /**
@@ -277,7 +276,7 @@ public class UserControllerTest {
     @Test
     public void testRemoveUserFromFriendListNullId1() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.put(route+"/remove/"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     /**
@@ -330,7 +329,7 @@ public class UserControllerTest {
     @Test
     public void testEmptyFriendListNullNickname() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.put(route+"/empty/"))
-                        .andExpect(MockMvcResultMatchers.status().isNotFound());
+                        .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     /**
