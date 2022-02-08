@@ -9,6 +9,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
+@CrossOrigin
 @RequestMapping("/games")
 public class GameController {
     private GameService service;
